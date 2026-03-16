@@ -45,11 +45,11 @@ int main(void){
     dealToHand(&CommunityBoard, deck, &deckTop);
     dealToHand(&CommunityBoard, deck, &deckTop);
     //printing hands
-    printf(" Community:\n");
+    printf(" Community");
     printHand(&CommunityBoard);
-    printf(" Player:\n");
+    printf(" Player");
     printHand(&playerHand);
-    printf(" Bot1:\n");
+    printf(" Bot1");
     printHand(&Bot1Hand);
     printf("\n");
 
@@ -58,14 +58,14 @@ int main(void){
 
     char DEBUGplayerScore[64];
     snprintf(DEBUGplayerScore, sizeof(DEBUGplayerScore), "Player Hand result: %d\n", evaluatedPlayer);
-    char DEBUGbot1Score[64];
-    snprintf(DEBUGbot1Score, sizeof(DEBUGbot1Score), "Bot 1 Hand result: %d\n", evaluatedBot1);
-    ColorfulPrintf(DEBUGplayerScore,0);
-    ColorfulPrintf(DEBUGbot1Score, 0);
+    ColPrintf(DEBUGplayerScore,0);
+    
+    ColPrintfPlus("Bot 1 Hand: %d\n",evaluatedBot1,0);
     
     //to be changed
     if(evaluatedPlayer > evaluatedBot1){
         printf("Player wins\n");
+        
     }
     else if(evaluatedPlayer < evaluatedBot1){
         printf("Bot 1 wins\n");

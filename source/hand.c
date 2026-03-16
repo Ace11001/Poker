@@ -12,7 +12,7 @@ void dealToHand(Hand* hand, Card* deck, int* deck_top) {
     }
 }
 void printHand(const Hand* hand){
-    printf(" Hand:\n");
+    printf(" Cards:\n");
     if(hand->count == 0){
         printf(">empty");
     }

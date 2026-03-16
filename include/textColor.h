@@ -5,6 +5,6 @@
 #define RED "\e[0;31m" // 1
 #define RESET "\033[0m"
 
-void ColorfulPrintf(char* str,int colorChoice);
-
+void ColPrintf(char* str,int colorChoice);
+void ColPrintfPlus(char* str, int num, int colornum);
 #endif

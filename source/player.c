@@ -67,7 +67,7 @@ void PlayerActionExec(int choice, Player *p, Board *b){
             Player_Fold(p, b);
             break;
         default:
-            ColorfulPrintf(">Invalid User Input, try again",1);
+            ColPrintf(">Invalid User Input, try again",1);
             int errorChoice = playerAction();
             PlayerActionExec(errorChoice,p,b);
     }
