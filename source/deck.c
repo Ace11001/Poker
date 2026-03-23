@@ -43,3 +43,11 @@ void shuffleDeck(Card* deck){
         deck[j]=temp;
     }
 }
+void resetDeck(Card* deck){
+    for(int i = 0; i<52; i++){
+        deck[i].rank = 0;
+        deck[i].suit = 0;
+    }
+    createDeck(deck);
+    shuffleDeck(deck);
+}

@@ -16,11 +16,12 @@ int main(void){
     srand(time(NULL));
     createDeck(deck);
     shuffleDeck(deck);
+    resetDeck(deck);
     GAME gameSpace;
     initGame(&gameSpace);
     printf(BLUE"SETUP END"RESET"\n\n");
     //Init end
-    dealToHand(&(gameSpace.playerHand), deck, &(gameSpace.deckTop));
-    printHand(&(gameSpace.playerHand));
+    printf("active%d|folded%d\n", gameSpace.player.active, gameSpace.player.folded);
+    testRound(&gameSpace);
     return 0;
 }

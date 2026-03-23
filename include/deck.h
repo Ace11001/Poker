@@ -13,7 +13,7 @@ void createDeck(Card* deck);
 void shuffleDeck(Card* deck);
 void printCardName(const Card* deck);
 void DEBUG_printDeck(const Card* deck);
-
+void resetDeck(Card* deck);
 extern const char* rank_names[13];
 extern const char* suit_names[4];
 

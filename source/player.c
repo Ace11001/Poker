@@ -33,7 +33,7 @@ int playerAction(){
     printf("  >All-In     - 2\n");
     printf("  >Fold       - 3\n");
     printf(">Select: ");
-    scanf("%d",&choice);
+    scanf("%d", &choice);
     printf("\n");
     return choice;
 }
@@ -84,9 +84,10 @@ void PlayerActionExec(int choice, Player *p, Board *b){
             Player_Fold(p, b);
             break;
         default:
-            ColPrintf(">Invalid User Input, try again",1);
+            ColPrintf(" > Invalid User Input, try again\n",1);
             int errorChoice = playerAction();
             PlayerActionExec(errorChoice,p,b);
+            break;
     }
 }
 void PlayerSetScore(Player *p, int scoreInput){

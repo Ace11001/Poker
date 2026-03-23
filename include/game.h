@@ -11,10 +11,10 @@ typedef struct GAME{
 
     Player player;
     Hand playerHand;
-    Player bot1, bot2, bot3, bot4, bot5;
-    Hand bot1Hand, bot2Hand, bot3Hand, bot4Hand, bot5Hand;
+    Player bots[5];
+    Hand botHands[5];
     Board board;
-    Hand boardHand[5];
+    Hand boardHand;
 
     int numberOfPlayers;
     int numberofActive;
@@ -22,4 +22,7 @@ typedef struct GAME{
     int deckTop;
 }GAME;
 void initGame(GAME *g);
+void testRound(GAME *g);
+void dealToActivePlayers(GAME *g);
+
 #endif
