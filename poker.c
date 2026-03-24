@@ -21,7 +21,6 @@ int main(void){
     initGame(&gameSpace);
     printf(BLUE"SETUP END"RESET"\n\n");
     //Init end
-    printf("active%d|folded%d\n", gameSpace.player.active, gameSpace.player.folded);
     testRound(&gameSpace);
     return 0;
 }
