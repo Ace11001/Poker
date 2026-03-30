@@ -5,10 +5,11 @@
 
 void initBoard(Board *b){
     b->pot = 0;
-    b->minBet = 5;
+    b->minBet = 2;
     b->phase = 0;
     b->AllInStatus = 0;
     b->AllInSize = 0;
+    b->communityCount = 0;
 }
 void payOutPot(Board *b, Player *p){
     int transfer = b->pot;

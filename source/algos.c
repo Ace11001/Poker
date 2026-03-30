@@ -1,6 +1,7 @@
 #include "algos.h"
 #include "hand.h"
 #include "evaluate.h"
+#include "game.h"
 
 int ChensFormula(Hand* h) {
     const double firstStepScores[13] = {1.0,1.5,2.0,2.5,3.0,3.5,4.0,4.5,5.0,6.0,7.0,8.0,10.0};
@@ -85,7 +86,7 @@ int SklanskyMalmuth(Hand *h) {
     // Group 1: AA, AKs, KK, QQ, JJ
     if ((isPair && card1rank >= 9) ||
         (isSuited && card1rank == 12 && card2rank == 11)) {
-        return 1;
+        return 9;
     }
     // Group 2: AK, AQs, AJs, KQs, TT
     if ((card1rank == 12 && card2rank == 11 && !isSuited) ||
@@ -93,7 +94,7 @@ int SklanskyMalmuth(Hand *h) {
         (isSuited && card1rank == 12 && card2rank == 9)  ||
         (isSuited && card1rank == 11 && card2rank == 10) ||
         (isPair && card1rank == 8)) {
-        return 2;
+        return 8;
     }
     // Group 3: AQ, ATs, KJs, QJs, JTs, 99
     if ((card1rank == 12 && card2rank == 10 && !isSuited) ||
@@ -102,7 +103,7 @@ int SklanskyMalmuth(Hand *h) {
         (isSuited && card1rank == 10 && card2rank == 9)   ||
         (isSuited && card1rank == 9  && card2rank == 8)   ||
         (isPair && card1rank == 7)) {
-        return 3;
+        return 7;
     }
     // Group 4: AJ, KQ, KTs, QTs, J9s, T9s, 98s, 88
     if ((card1rank == 12 && card2rank == 9  && !isSuited) ||
@@ -113,7 +114,7 @@ int SklanskyMalmuth(Hand *h) {
         (isSuited && card1rank == 8  && card2rank == 7)   ||
         (isSuited && card1rank == 7  && card2rank == 6)   ||
         (isPair && card1rank == 6)) {
-        return 4;
+        return 6;
     }
     // Group 5: A9s-A2s, KJ, QJ, JT, Q9s, T8s, 97s, 87s, 77, 76s, 66
     if ((isSuited && card1rank == 12 && card2rank >= 0 && card2rank <= 7) ||
@@ -138,7 +139,7 @@ int SklanskyMalmuth(Hand *h) {
         (isSuited && card1rank == 4  && card2rank == 3)   ||
         (isPair && card1rank == 3)                        ||
         (isSuited && card1rank == 3  && card2rank == 2)) {
-        return 6;
+        return 4;
     }
     // Group 7: K9s-K2s, J9, T9, 98, 64s, 53s, 44, 43s, 33, 22
     if ((isSuited && card1rank == 11 && card2rank >= 0 && card2rank <= 7) ||
@@ -151,7 +152,7 @@ int SklanskyMalmuth(Hand *h) {
         (isSuited && card1rank == 2  && card2rank == 1)   ||
         (isPair && card1rank == 1)                        ||
         (isPair && card1rank == 0)) {
-        return 7;
+        return 3;
     }
     // Group 8: A9, K9, Q9, J8, J7s, T8, 96s, 87, 85s, 76, 74s, 65, 54, 42s, 32s
     if ((card1rank == 12 && card2rank == 7  && !isSuited) ||
@@ -165,24 +166,29 @@ int SklanskyMalmuth(Hand *h) {
         (card1rank == 5  && card2rank == 4  && !isSuited) ||
         (isSuited && card1rank == 2  && card2rank == 0)   ||
         (isSuited && card1rank == 1  && card2rank == 0)) {
-        return 8;
+        return 2;
+    }
+    // Very weak but still “better than total trash”: A2s–A9s, K2s–K9s, Q2s–Q9s, etc.
+    if ((card1rank == 12 && card2rank >= 0 && card2rank <= 7 && isSuited) ||
+        (card1rank == 11 && card2rank >= 0 && card2rank <= 7 && isSuited) ||
+        (card1rank == 10 && card2rank >= 0 && card2rank <= 7 && isSuited)) {
+        return 3;
     }
     // Group 9: everything else
-    return 9;
+    return 1;
 }
-int BoardTexture(Hand* board){
-    //printf("BoardTexture analysis:\n");
+int BoardTexture(Hand* board, int communityCount){
     int rankCount[13] = {0};
-    for(int i = 0; i < 5; i++) {
+    int boardCount = communityCount;
+    for(int i = 0; i < boardCount; i++) {
         int rank = board->cards[i].rank;
         rankCount[rank]++;
     }
-    int suitCount[4]={0};
-    for(int i = 0; i < 5; i++){
+    int suitCount[4] = {0};
+    for(int i = 0; i < boardCount; i++) {
         int suit = board->cards[i].suit;
         suitCount[suit]++;
-    }
-
+    }   
     /*debug print freq
     printf("Suit occurences:\n|C|S|H|D|\n");
     for(int i = 0; i<4;i++){
@@ -306,14 +312,143 @@ int gapScoreLen(Hand* board, int numOfCards) {
             totalGap += uniqueRanks[i+1] - uniqueRanks[i];
         }
         float avgGap = (float)totalGap / (uniqueCount-1);
-        
-        printf("DEBUG: uniqueCount=%d, totalGap=%d, avgGap=%.2f\n", 
-               uniqueCount, totalGap, avgGap);        
         if(avgGap <= 1.0f) gapScore = 3;
         else if(avgGap <= 1.5f) gapScore = 2;
         else if(avgGap <= 2.0f) gapScore = 1;
         else gapScore = 0;
     }
-    printf("FINAL gapScore=%d\n", gapScore); 
     return gapScore;
+}
+void bot_PreFlop(GAME *g, int botIndex){
+    int Astatus = g->bots[botIndex].active;
+    int Fstatus = g->bots[botIndex].folded;
+    if( Astatus == 1 && Fstatus == 0){
+        int chen = ChensFormula(&g->botHands[botIndex]); //higher is better
+        int SklMal = SklanskyMalmuth(&g->botHands[botIndex]); //higher is better
+        int gap = gapScoreLen(&g->botHands[botIndex], 2); //Lower is better
+        //Normalise scores
+        double chen_norm = (chen-1) / 21.0;
+        double SklMal_norm = (SklMal-1) / 8.0;
+        double gap_norm = gap / 3.0;
+        //weights for scoring
+        double weight1 = 0.4;
+        double weight2 = 0.4;
+        double weight3 = 0.2;
+        double score = weight1 * chen_norm + weight2 * SklMal_norm + weight3 * gap_norm;
+        /*DebugPrints
+        printf("bot%d: chen=%d, SklMal=%d, gap=%d\n", botIndex+1, chen, SklMal, gap);
+        printf("chen_norm=%.3f, SklMal_norm=%.3f, gap_norm=%.3f\n",chen_norm, SklMal_norm, gap_norm);
+        printf("bot%d PreFlop Score: %lf\n",botIndex+1,score);
+        */
+        if(score < 0.04){
+            //fold
+            g->bots[botIndex].folded = 1;
+            printf("Bot%d folds\n",1+botIndex);
+            return;
+        } else if(score < 0.10){
+            if(g->board.minBet > 2){//fold if someone raised before; also magic number, fix later
+                g->bots[botIndex].folded=1;
+                printf("Bot%d folds\n",1+botIndex);
+                return;
+            }else{
+                g->bots[botIndex].bet = g->board.minBet;
+                printf("Bot%d calls\n",1+botIndex);
+                placeInPot(&g->bots[botIndex], &g->board);
+                return;
+            }
+        } else if(score < 0.30){
+            //call
+            g->bots[botIndex].bet = g->board.minBet;
+            printf("Bot%d calls\n",botIndex+1);
+            placeInPot(&g->bots[botIndex], &g->board);
+            return;
+        } else if(score < 0.55){
+            //raise 3 bet
+            g->bots[botIndex].bet = 6; //magic number, fix later
+            g->board.minBet = g->bots[botIndex].bet;
+            printf("Bot%d raises %d\n",botIndex+1,g->bots[botIndex].bet);
+            placeInPot(&g->bots[botIndex], &g->board);
+            return;
+        } else{
+            //raise 4 bet
+            g->bots[botIndex].bet = 12; //magic number, fix later
+            g->board.minBet = g->bots[botIndex].bet;
+            printf("Bot%d raises %d\n",botIndex+1,g->bots[botIndex].bet);
+            placeInPot(&g->bots[botIndex], &g->board);
+            return;
+        }
+    }else{return;}
+}
+void bot_Flop(GAME *g, int botIndex) {
+    int botId = botIndex + 1;
+    int Astatus = g->bots[botIndex].active;
+    int Fstatus = g->bots[botIndex].folded;
+    if (Astatus != 1 || Fstatus == 1) {
+        return;
+    }
+
+    // Safety: flop dealt?
+    if (g->board.communityCount < 3) {
+        printf("Bot%d: No flop\n", botId);
+        return;
+    }
+
+    int chen = ChensFormula(&g->botHands[botIndex]);
+    int SklMal = SklanskyMalmuth(&g->botHands[botIndex]);
+    int gap = gapScoreLen(&g->botHands[botIndex], 2);
+    
+    // Normalize (guards prevent NaN)
+    double chen_norm = (chen > 0 && chen <= 22) ? (chen - 1) / 21.0 : 0.0;
+    double SklMal_norm = (SklMal > 0 && SklMal <= 9) ? (SklMal - 1) / 8.0 : 0.0;
+    double gap_norm = (gap >= 0 && gap <= 3) ? gap / 3.0 : 1.0;
+    
+    double scorePreFlop = 0.4 * chen_norm + 0.4 * SklMal_norm + 0.2 * gap_norm;
+    int texture = BoardTexture(&g->boardHand, g->board.communityCount);
+    double texture_norm = (texture >= 0 && texture <= 12) ? texture / 12.0 : 0.5;
+    double scoreFlop = 0.7 * scorePreFlop + 0.3 * (1.0 - texture_norm);
+    
+    printf("Bot%d Flop score: %.6f (chen=%.2f skl=%.2f tex=%.2f)\n", 
+           botId, scoreFlop, chen_norm, SklMal_norm, texture_norm);
+    fflush(stdout);
+
+    // Chips status (fixed init)
+    int otherChips = g->player.chips;
+    for (int i = 0; i < 5; i++) {
+        otherChips += g->bots[i].chips;
+    }
+    otherChips -= g->bots[botIndex].chips;
+    double chipAvg = (g->numberOfPlayers > 0) ? otherChips / (double)g->numberOfPlayers : 0;
+    int chipsStatus = (g->bots[botIndex].chips > chipAvg) ? 1 : 0;
+
+    int minBet = g->board.minBet;  // Use g->board (your struct)
+    int raise3x = minBet * 3;
+    if (raise3x < 6) raise3x = 6;
+
+    if (scoreFlop < 0.25) {
+        g->bots[botIndex].folded = 1;
+        printf("Bot%d folds\n", botId);
+    } else if (scoreFlop < 0.35) {
+        if (minBet > 2) {
+            g->bots[botIndex].folded = 1;
+            printf("Bot%d folds to raise\n", botId);
+        } else {
+            g->bots[botIndex].bet = minBet;
+            printf("Bot%d checks\n", botId);  // minBet=0 usually
+            placeInPot(&g->bots[botIndex], &g->board);
+        }
+    } else if (scoreFlop < 0.45) {
+        g->bots[botIndex].bet = minBet;
+        printf("Bot%d calls %d\n", botId, minBet);
+        placeInPot(&g->bots[botIndex], &g->board);
+    } else if (scoreFlop < 0.55 || chipsStatus == 1) {
+        g->bots[botIndex].bet = raise3x;
+        g->board.minBet = raise3x;
+        printf("Bot%d 3-bets to %d\n", botId, raise3x);
+        placeInPot(&g->bots[botIndex], &g->board);
+    } else {
+        g->bots[botIndex].bet = g->bots[botIndex].chips;  // All-in strong
+        printf("Bot%d shoves %d\n", botId, g->bots[botIndex].bet);
+        placeInPot(&g->bots[botIndex], &g->board);
+    }
+    fflush(stdout);
 }
