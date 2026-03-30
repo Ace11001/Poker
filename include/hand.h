@@ -11,6 +11,6 @@ typedef struct {
 
 void initHand(Hand* hand);
 void dealToHand(Hand* hand, Card* deck, int* deckTop);
-void printHand(const Hand* hand);
+void printHand(Hand* hand);
 
 #endif

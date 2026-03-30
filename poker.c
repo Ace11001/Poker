@@ -8,106 +8,137 @@
 #include "evaluate.h"
 #include "algos.h"
 #include "textColor.h"
+#include "game.h"
 
 int main(void){
     //Init
-        printf(BLUE"SETUP START"RESET"\n");
+    printf(BLUE"SETUP START"RESET"\n");
     srand(time(NULL));
     createDeck(deck);
     shuffleDeck(deck);
+    resetDeck(deck);
+    GAME game;
+    initGame(&game);
+    printf(BLUE"SETUP END"RESET"\n\n");
+    //Init end//testRound(&gameSpace);
+    dealToActivePlayers(&game);
+    for(int i = 0; i < 5; i++){
+        printf("Bot %d's",i+1);
+        printHand(&game.botHands[i]);
+        bot_PreFlop(&game, i);
+        printf("\n");
+    }
+    printf("Player's ");
+    printHand(&game.playerHand);
+    game.playerChoice = playerAction();
+    printf("minBet %d\n",game.board.minBet );
+    printf("playerChips%d\n",game.player.chips);
+    PlayerActionExec(game.playerChoice, &game.player, &game.board);
+    printf("playerChips%d\n",game.player.chips);
+    //end of preflop
+    dealToHand(&game.boardHand, deck, &game.deckTop);
+    dealToHand(&game.boardHand, deck, &game.deckTop);
+    dealToHand(&game.boardHand, deck, &game.deckTop);
+    game.board.communityCount = 3;
+    printf("Community's\n");
+    printHand(&game.boardHand);
+    printf("\nFlop\n");
+    for(int i = 0; i < 5; i++){
+        if(game.bots[i].folded == 0 && game.bots[i].active == 1){
+            printf("Bot %d's",i+1);
+            printHand(&game.botHands[i]);
+            bot_Flop(&game, i);
+        }
+    }
+    printf("Player's ");
+    printHand(&game.playerHand);
+    game.playerChoice = playerAction();
+    printf("minBet %d\n",game.board.minBet );
+    printf("playerChips%d\n",game.player.chips);
+    PlayerActionExec(game.playerChoice, &game.player, &game.board);
+    printf("playerChips%d\n",game.player.chips);
+    //end of flop
+    printf("\nturn\n");
+    dealToHand(&game.boardHand, deck, &game.deckTop);
+    game.board.communityCount = 4;
+    printf("Community's\n");
+    printHand(&game.boardHand);
+    for(int i = 0; i < 5; i++){
+        if(game.bots[i].folded == 0 && game.bots[i].active == 1){
+            printf("Bot %d's",i+1);
+            printHand(&game.botHands[i]);
+            bot_Turn(&game, i);
+        }
+    }
+    printf("Player's ");
+    printHand(&game.playerHand);
+    game.playerChoice = playerAction();
+    printf("minBet %d\n",game.board.minBet );
+    printf("playerChips%d\n",game.player.chips);
+    PlayerActionExec(game.playerChoice, &game.player, &game.board);
+    printf("playerChips%d\n",game.player.chips);
+    //end of turn
+    printf("\nRiver\n");
+    dealToHand(&game.boardHand, deck, &game.deckTop);
+    game.board.communityCount = 5;
+    printf("Community's\n");
+    printHand(&game.boardHand);
+    for(int i = 0; i < 5; i++){
+        if(game.bots[i].folded == 0 && game.bots[i].active == 1){
+            printf("Bot %d's",i+1);
+            printHand(&game.botHands[i]);
+            printf("Calling bot_River\n");
+            bot_River(&game, i);
+        }
+    }
+    printf("Player's ");
+    printHand(&game.playerHand);
+    game.playerChoice = playerAction();
+    printf("minBet %d\n",game.board.minBet );
+    printf("playerChips%d\n",game.player.chips);
+    PlayerActionExec(game.playerChoice, &game.player, &game.board);
+    printf("playerChips%d\n",game.player.chips);
+    //showdown!
+    int playerEval, bot1Eval, bot2Eval, bot3Eval, bot4Eval, bot5Eval;
+    if(game.player.active == 1 && game.player.folded == 0){playerEval = evaluateMain(&game.playerHand, &game.boardHand);}
+    if(game.bots[0].active == 1 && game.bots[0].folded == 0){bot1Eval = evaluateMain(&game.botHands[0], &game.boardHand);}
+    if(game.bots[1].active == 1 && game.bots[0].folded == 0){bot2Eval = evaluateMain(&game.botHands[1], &game.boardHand);}
+    if(game.bots[2].active == 1 && game.bots[0].folded == 0){bot3Eval = evaluateMain(&game.botHands[2], &game.boardHand);}
+    if(game.bots[3].active == 1 && game.bots[0].folded == 0){bot4Eval = evaluateMain(&game.botHands[3], &game.boardHand);}
+    if(game.bots[4].active == 1 && game.bots[0].folded == 0){bot5Eval = evaluateMain(&game.botHands[4], &game.boardHand);}
     
-    Hand playerHand = {0};
-    Hand player2Hand = {0};
-    int numAllPlayers = 2;
-    int numActivePlayers = 2;
-    int pl1Choice, pl2Choice; 
-    
-    Hand CommunityBoard = {0};
-    
-    int startingChips = 1000;
-    Player player;
-    Player player2;
-    Board board;
-    
-    initPlayer(&player, startingChips, "Player");
-    initPlayer(&player2,startingChips, "Bot");
-    initBoard(&board);
-    
-    int deckTop = 0; 
-    int roundCount = 1;
-        printf(BLUE"SETUP END"RESET"\n\n");
-    //Init end
-    //Round Demo - Crude Implementation, only 2 players, no bots
-    ColPrintfPlus("Round %d\n",roundCount,1);
-    printf(" >Starting Bet - %d\n",(&board)->minBet);
-    playerInitBet(&player, &board);
-    playerInitBet(&player2, &board);
-    placeInPot(&player,&board);
-    placeInPot(&player2,&board);
-        //prereqs done,card dealing
-    dealToHand(&playerHand, deck, &deckTop);
-    dealToHand(&player2Hand, deck, &deckTop);
-    dealToHand(&playerHand, deck, &deckTop);
-    dealToHand(&player2Hand, deck, &deckTop);
-        //cards dealt,betting
-    pl1Choice = playerAction();
-    PlayerActionExec(pl1Choice, &player, &board);
-    pl2Choice = playerAction();
-    PlayerActionExec(pl2Choice, &player2, &board);
-        //player Actions done, community dealing
-    dealToHand(&CommunityBoard,deck,&deckTop);
-    dealToHand(&CommunityBoard,deck,&deckTop);
-    dealToHand(&CommunityBoard,deck,&deckTop);
-    printHand(&CommunityBoard);
-        //second action
-    pl1Choice = playerAction();
-    PlayerActionExec(pl1Choice, &player, &board);
-    pl2Choice = playerAction();
-    PlayerActionExec(pl2Choice, &player2, &board);
-        //next card
-    dealToHand(&CommunityBoard, deck, &deckTop);
-    printHand(&CommunityBoard);
-        //third action
-    pl1Choice = playerAction();
-    PlayerActionExec(pl1Choice, &player, &board);
-    pl2Choice = playerAction();
-    PlayerActionExec(pl2Choice, &player2, &board);
-        //final draw
-    dealToHand(&CommunityBoard, deck, &deckTop);
-    printHand(&CommunityBoard);
-        //final action
-    pl1Choice = playerAction();
-    PlayerActionExec(pl1Choice, &player, &board);
-    pl2Choice = playerAction();
-    PlayerActionExec(pl2Choice, &player2, &board);
-        //card reveal
-    printf("\n\n\n\n\n");
-    printHand(&CommunityBoard);
-    printHand(&playerHand);
-    printHand(&player2Hand);
-    
-    //eval
-    int evaluatedPlayer = evaluateMain(&playerHand,&CommunityBoard);
-    int evaluatedBot1 = evaluateMain(&player2Hand, &CommunityBoard);
+    int bestEval = -1;
+    int bestPlayerId = -1;  // 0=player, 1–5 bots
 
-    char DEBUGplayerScore[64];
-    snprintf(DEBUGplayerScore, sizeof(DEBUGplayerScore), "Player Hand result: %d\n", evaluatedPlayer);
-    char DEBUGbot1Score[64];
-    snprintf(DEBUGbot1Score, sizeof(DEBUGbot1Score), "Bot 1 Hand result: %d\n", evaluatedBot1);
-    ColPrintf(DEBUGplayerScore,0);
-    ColPrintf(DEBUGbot1Score, 0);
-    
-    //to be changed
-    if(evaluatedPlayer > evaluatedBot1){
-        printf("Player wins\n");
+    if (game.player.active == 1 && game.player.folded == 0) {
+        int playerEval = evaluateMain(&game.playerHand, &game.boardHand);
+        if (playerEval > bestEval) {
+            bestEval = playerEval;
+            bestPlayerId = 0;
+        }
     }
-    else if(evaluatedPlayer < evaluatedBot1){
-        printf("Bot 1 wins\n");
+
+    for (int i = 0; i < 5; i++) {
+        if (game.bots[i].active == 1 && game.bots[i].folded == 0) {
+            int botEval = evaluateMain(&game.botHands[i], &game.boardHand);
+            if (botEval > bestEval) {
+                bestEval = botEval;
+                bestPlayerId = i + 1;  // 1–5 for bots
+            }
+        }
     }
-    else if(evaluatedPlayer == evaluatedBot1){
-        printf("Draw!\n");
-        //add way to divide pot evenly between winning players
+    if(bestPlayerId == 0){
+        printf("Player Wins!!!\n");
+        printf("Debug player chips%d\n",game.player.chips);
+        payOutPot(&game.board, &game.player);
+        printf("Debug player chips%d\n",game.player.chips);
     }
-    
+    else{
+        printf("Bot%d Wins!!!\n",bestPlayerId);
+        printf("Debug bot%d chips%d",bestPlayerId-1,game.player.chips);
+        payOutPot(&game.board, &game.bots[bestPlayerId-1]);
+        printf("Debug bot%d chips%d",bestPlayerId-1,game.player.chips);
+    }
+
     return 0;
 }

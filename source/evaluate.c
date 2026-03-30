@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "C:\Users\galje\Desktop\PM_Poker_C\include\evaluate.h"
+#include "evaluate.h"
 
 /*
 Hand combinations:    |Score:

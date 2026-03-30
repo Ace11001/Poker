@@ -1,4 +1,4 @@
-#include "C:\Users\galje\Desktop\PM_Poker_C\include\player.h"
+#include "player.h"
 #include <stdio.h>
 #include "board.h"
 #include "textColor.h"
@@ -33,11 +33,12 @@ int playerAction(){
     printf("  >All-In     - 2\n");
     printf("  >Fold       - 3\n");
     printf(">Select: ");
-    scanf("%d",&choice);
+    scanf("%d", &choice);
     printf("\n");
     return choice;
 }
 void Player_Call_Check(Player *p, Board *b){
+    p->bet = b->minBet;
     placeInPot(p, b);
     printf("%s's move: Call/Check\n",p->name);
 }
@@ -53,19 +54,20 @@ void Player_Raise(Player *p,Board *b){
     scanf("%d",&playerRaiseAmount);
     p->bet += playerRaiseAmount;
     placeInPot(p,b);
+    b->minBet = playerRaiseAmount;
     printf("%s raises %d\n",p->name,playerRaiseAmount);
 }
 void Player_ALLIN(Player *p, Board *b){
     printf("%s goes All-In!!!\n",p->name);
     int AllInSize = p->chips;
-    p->bet = p->chips;
-    p->chips = 0;
+    p->bet = AllInSize;
     placeInPot(p,b);
+    p->chips = 0;
     b->AllInStatus=1;
     b->AllInSize = AllInSize;
 }
 void Player_Fold(Player *p,Board *b){
-    printf("&s Folded!!!\n",p->name);
+    printf("%s Folded!!!\n",p->name);
     p->folded = 1;
     placeInPot(p,b);
 }
@@ -84,9 +86,10 @@ void PlayerActionExec(int choice, Player *p, Board *b){
             Player_Fold(p, b);
             break;
         default:
-            ColPrintf(">Invalid User Input, try again",1);
+            ColPrintf(" > Invalid User Input, try again\n",1);
             int errorChoice = playerAction();
             PlayerActionExec(errorChoice,p,b);
+            break;
     }
 }
 void PlayerSetScore(Player *p, int scoreInput){
