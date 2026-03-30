@@ -24,12 +24,10 @@ int main(void){
     //Init end//testRound(&gameSpace);
     dealToActivePlayers(&game);
     for(int i = 0; i < 5; i++){
-        printf("Bot %d's",i+1);
         printHand(&game.botHands[i]);
         bot_PreFlop(&game, i);
         printf("\n");
     }
-    printf("Player's ");
     printHand(&game.playerHand);
     game.playerChoice = playerAction();
     printf("minBet %d\n",game.board.minBet );
@@ -41,17 +39,14 @@ int main(void){
     dealToHand(&game.boardHand, deck, &game.deckTop);
     dealToHand(&game.boardHand, deck, &game.deckTop);
     game.board.communityCount = 3;
-    printf("Community's\n");
     printHand(&game.boardHand);
     printf("\nFlop\n");
     for(int i = 0; i < 5; i++){
         if(game.bots[i].folded == 0 && game.bots[i].active == 1){
-            printf("Bot %d's",i+1);
             printHand(&game.botHands[i]);
             bot_Flop(&game, i);
         }
     }
-    printf("Player's ");
     printHand(&game.playerHand);
     game.playerChoice = playerAction();
     printf("minBet %d\n",game.board.minBet );
@@ -62,16 +57,13 @@ int main(void){
     printf("\nturn\n");
     dealToHand(&game.boardHand, deck, &game.deckTop);
     game.board.communityCount = 4;
-    printf("Community's\n");
     printHand(&game.boardHand);
     for(int i = 0; i < 5; i++){
         if(game.bots[i].folded == 0 && game.bots[i].active == 1){
-            printf("Bot %d's",i+1);
             printHand(&game.botHands[i]);
             bot_Turn(&game, i);
         }
     }
-    printf("Player's ");
     printHand(&game.playerHand);
     game.playerChoice = playerAction();
     printf("minBet %d\n",game.board.minBet );
@@ -82,17 +74,14 @@ int main(void){
     printf("\nRiver\n");
     dealToHand(&game.boardHand, deck, &game.deckTop);
     game.board.communityCount = 5;
-    printf("Community's\n");
     printHand(&game.boardHand);
     for(int i = 0; i < 5; i++){
         if(game.bots[i].folded == 0 && game.bots[i].active == 1){
-            printf("Bot %d's",i+1);
             printHand(&game.botHands[i]);
             printf("Calling bot_River\n");
             bot_River(&game, i);
         }
     }
-    printf("Player's ");
     printHand(&game.playerHand);
     game.playerChoice = playerAction();
     printf("minBet %d\n",game.board.minBet );

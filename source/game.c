@@ -20,7 +20,10 @@ void initGame(GAME *g){
     initBoard(&(g->board));
     g->deckTop = 0;
     g->round = 1;
-
+    initHand(&g->playerHand, &g->player);
+    for(int i = 0; i < 5; i++){
+        initHand(&g->botHands[i],&g->bots[i]);
+    }
     g->playerHand.count = 0;
     for(int i = 0; i<5; i++){
         g->botHands[i].count=0;

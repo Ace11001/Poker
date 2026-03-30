@@ -1,0 +1,24 @@
+int ChensFormula(Hand* h){...}
+    Algoritem za numerični score player/bot-ovih kart
+
+int SklanskyMalmuth(Hand *h){...}
+    Vnaprej znane kombinacije kart, sortirane v skupine glede na "moč" 
+
+int BoardTexture(Hand* board, int communityCount){...}
+    Numerična ocena kako nevarne so community karte oz. če je velika možnost da ima kdo od drugih igralcev
+    dobro kombinacijo kart
+
+int gapScoreLen(Hand* board, int numOfCards){...}
+    Število, ki predstavlja kako skupaj/narazen so karte
+
+void bot_PreFlop(GAME *g, int botIndex){...}
+    Zelo osnovna logika za bote, specifična za fazo preflop 
+
+void bot_Flop(GAME *g, int botIndex){...}
+    Zelo osnovna logika za bote, specifična za fazo flop
+
+void bot_Turn(GAME *g, int botIndex){...}
+    Zelo osnovna logika za bote, specifična za fazo turn
+
+void bot_River(GAME *g, int botIndex){...}
+    Zelo osnovna logika za bote, specifična za fazo river

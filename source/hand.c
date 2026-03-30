@@ -1,8 +1,10 @@
 #include "hand.h"
+#include "player.h"
 #include <stdlib.h>
 
-void initHand(Hand* hand){
+void initHand(Hand* hand, Player* player){
     hand->count = 0;
+    hand->name = player->name;
 }
 void dealToHand(Hand* hand, Card* deck, int* deck_top) {
     hand->cards[hand->count] = deck[*deck_top];
@@ -12,7 +14,7 @@ void dealToHand(Hand* hand, Card* deck, int* deck_top) {
 
 void printHand(Hand* hand){
     int cardCount = hand->count;
-    printf(" Cards:\n");
+    printf("%s's Cards:\n",hand->name);
     if(cardCount == 0){
         printf(">empty");
     }

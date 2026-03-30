@@ -1,0 +1,42 @@
+#define MAX_COMBINATIONS 21   21 edinstvenih 5-kart-dolgih permutacij izven 7 možnih kart
+#define COMBO_SIZE 5          5 ker sestavljamo kombinacije 5ih kart
+
+typedef struct {
+    Card cards[COMBO_SIZE];
+} Hand5;
+    Unikaten struct za lažje delo z permutacijami
+
+Hand combinations:    |Score:
+    1. Royal Flush    |10
+    2. Straight Flush |9
+    3. Four of a Kind |8
+    4. Full House     |7
+    5. Flush          |6
+    6. Straight       |5
+    7. Three of a Kind|4
+    8. Two Pair       |3
+    9. Pair           |2
+    10. High card     |1
+
+void permutateCards(Hand* hand1, Hand* boardhand, Hand5 out[MAX_COMBINATIONS]) {...}
+    Ustvari permutacije karte player/bot-a in community karte
+
+void buildFreqMap(Hand5* hand, int freq[13]){...}
+    V dani array zapiše število ponovitev istih rankov, ki so indeksirani kot Struct Card.rank
+
+int isFlush(Hand5* hand){...}
+    Preverja če je dani Hand5 struct vsebuje 5 kart z istim Card.suit
+
+int isStraight(Hand5* hand){...}
+    Preverja če dani Hand5 struct sestavlja 5 kart, ki so si zaporedne med seboj
+
+int evaluateHand5(Hand5* hand){...}
+    Funkcija najprej sestavi frequency Map vseh kart Hand5 structa
+    Nato preveri če je dani Hand5 flush in/ali straight
+    Iz frequency mapa nato izlušči če in koliko pair/three of a kind/four of a kind vsebuje Hand5
+    Ko ima vse te informacije lahko določi katera možna hand kombinacija je dani Hand5 - Najde najboljšo kombinacijo
+    Vrne celoštevilsko vrednost od 10 do 1, kjer je 10 Royal Flush in 1 High Card 
+
+int evaluateMain(Hand* hand1,Hand* boardHand){...}
+    Funkcija preverja vseh 21 možnih permutacij s funkcijo evaluateHand5();
+    Iz teh 21 možnih kombinacij poišče najmočnejšo permutacijo in vrne celoštevilsko vrednost te kombinacije
