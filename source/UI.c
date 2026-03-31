@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <windows.h>
+#include "game.h"
 
 #define BLUE "\033[34m" 
 #define GRAY "\033[90m" 
@@ -93,49 +93,42 @@ void cardPrint(int xCord,int yCord, int rank, int suit){
         printf("└─────┘");
     }
 }
-void botFace(int xCord, int yCord,int variant){
-   switch(variant){
-    case 0:
-        gotoxy(xCord,yCord);
-        printf("   / ");
-        gotoxy(xCord,yCord+1);
-        printf("[°  °]");
-        gotoxy(xCord,yCord+2);
-        printf("  -  ");
-        break;
-    default:
-        break;
-   } 
-}
-
-int main(void){
+void drawFrame(GAME *g){
     system("chcp 65001");
     system("cls");
     //bot boxes
-    botWindow(1     , 1, "Bot 1", 1238, 12, 0, 0, 1);
-    botWindow(1 + 15, 1, "Bot 2", 762, 12, 1, 0, 1);
-    botWindow(1 + 30, 1, "Bot 3", 873, 12, 2, 1, 0);
-    botWindow(1 + 45, 1, "Bot 4", 247, 12, 3, 1, 1);
-    botWindow(1 + 60, 1, "Bot 5", 675, 12, 4, 1, 1);
-    
+    int b1C = g->bots[0].chips;int b2C = g->bots[1].chips;int b3C = g->bots[2].chips;int b4C = g->bots[3].chips;int b5C = g->bots[4].chips;
+    int b1B = g->bots[0].bet;int b2B = g->bots[1].bet;int b3B = g->bots[2].bet;int b4B = g->bots[3].bet;int b5B = g->bots[4].bet;
+    int b1F = g->bots[0].folded;int b2F = g->bots[1].folded;int b3F = g->bots[2].folded;int b4F = g->bots[3].folded;int b5F = g->bots[4].folded;
+    int b1A = g->bots[0].active;int b2A = g->bots[1].active;int b3A = g->bots[2].active;int b4A = g->bots[3].active;int b5A = g->bots[4].active;
+    botWindow(1     , 1, "Bot 1", b1C, b1B, 0, b1F, b1A);
+    botWindow(1 + 15, 1, "Bot 2", b2C, b2B, 1, b2F, b2A);
+    botWindow(1 + 30, 1, "Bot 3", b3C, b3B, 2, b3F, b3A);
+    botWindow(1 + 45, 1, "Bot 4", b4C, b4B, 3, b4F, b4A);
+    botWindow(1 + 60, 1, "Bot 5", b5C, b5B, 4, b5F, b5A);
+    //line segment
     gotoxy(1,6);
     for(int i = 0; i < 74; i ++){
         printf("─");
     }
+    //Community Area
     gotoxy(1,7);
     printf("Community Cards");
     gotoxy(1,8);
-    printf(" > Pot:   "YELLOW"%4d"RESET, 1234);
+    int potsize = g->board.pot;
+    printf(" > Pot:   "YELLOW"%-4d"RESET, potsize);
     gotoxy(1,9);
-    printf(" > MinBet:"YELLOW"%-4d"RESET,12);
+    int minbet = g->board.minBet;
+    printf(" > MinBet:"YELLOW"%-4d"RESET,minbet);
     gotoxy(65,7);
-    printf("Round: %-3d", 5);
-    //community cards
-    cardPrint(18, 8, 0,0);
-    cardPrint(18+8, 8, 1,0);
-    cardPrint(18+16, 8, 2,0);
-    cardPrint(18+24, 8, 3,0);
-    cardPrint(18+32, 8, 4,0);
+    int round = g->round;
+    printf("Round: %-3d", round);
+    //adress the 0/3/4/5 amount of com.cards
+    cardPrint(18, 8, 0,0);//Magic Numbers, adress
+    cardPrint(18+8, 8, 1,0);//Magic Numbers, adress
+    cardPrint(18+16, 8, 2,0);//Magic Numbers, adress
+    cardPrint(18+24, 8, 3,0);//Magic Numbers, adress
+    cardPrint(18+32, 8, 4,0);//Magic Numbers, adress
     //Player area
     gotoxy(1,14);
     for(int i = 0; i < 74; i ++){
@@ -144,10 +137,12 @@ int main(void){
     }
     printf("\n");
     printf("Player:\n");
-    printf(" > Chips: "YELLOW"%-4d"RESET"\n", 9999);
-    printf(" > Bet:   "YELLOW"%-4d"RESET"\n", 12);
-    cardPrint(29,16, 8,3);
-    cardPrint(39,16, 8,3);
+    int playerChips = g->player.chips;int playerBet = g->player.bet;
+    printf(" > Chips: "YELLOW"%-4d"RESET"\n", playerChips);
+    printf(" > Bet:   "YELLOW"%-4d"RESET"\n", playerBet);
+    //adress that cards might not exist yet
+    cardPrint(29,16, 8,3);//Magic Numbers, adress
+    cardPrint(39,16, 8,3);//Magic Numbers, adress
     gotoxy(54,15);
     printf("| Available actions:");
     gotoxy(54,16);
@@ -164,20 +159,35 @@ int main(void){
     printf("| Enter choice:");
     gotoxy(54,22);
     printf("┴────────────────────");
-//      gotoxy(70, 21);     User choice place
-//      printf("here");
+    //line segment
     gotoxy(1,22);
     for(int i = 0; i < 74; i ++){
         if(i != 53){printf("─");}
         else{printf("┴");}
     }
-    
+    //useful info
     gotoxy(1,23);
-    printf("Pairs: %d | Three of a kind: %d | Four of a kind: %d | Straight: %d | Flush: %d ",2, 0, 0, 1, 0);
-    
+    //fork evaluate
+    printf("Pairs: %d | Three of a kind: %d | Four of a kind: %d | Straight: %d | Flush: %d ",2, 0, 0, 1, 0);//Magic Numbers, adress
+    /*
     gotoxy(70,21);
     int x;
     scanf("%d",&x);
     gotoxy(70, 24);
     printf("%d",x);
+    */
 }
+//  TO-DO
+//  - Make the window drawing a function
+//      - Use GAME *g
+//  - Add Linux and MAC support
+/*
+LINUX version
+#include <stdio.h>
+#include <stdlib.h>
+#include <locale.h> <==
+...
+int main(void){
+    setlocale(LC_ALL, "en_US.UTF-8"); <==
+    system("clear"); <==
+*/
