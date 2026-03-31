@@ -8,6 +8,7 @@
 #include "evaluate.h"
 
 void initGame(GAME *g){
+    g->boardHand.name = "Community";
     g->numberOfPlayers = 6;
     g->numberofActive = 6;
     g->startingChips = 1000;
@@ -147,5 +148,5 @@ void testRound(GAME *g){
         botScores[i] = evaluateMain(&g->botHands[i],&g->boardHand);
         printf("Bot%d score: %d\n", (i+1), botScores[i]);
     }
-    testFindWinner(playerScore, botScores, 5, g);    
+    testFindWinner(playerScore, botScores, 5, g);
 }

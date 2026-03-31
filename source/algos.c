@@ -54,7 +54,8 @@ int ChensFormula(Hand* h) {
             score += 1.0;
         }
     }
-    int result = (int)ceil(score);
+
+    int result = (int)score%1 + 1;
     if (result < 1) result = 1;  // never returns 0
     return result;
 }

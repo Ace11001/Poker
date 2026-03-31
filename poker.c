@@ -24,7 +24,6 @@ int main(void){
     //Init end//testRound(&gameSpace);
     dealToActivePlayers(&game);
     for(int i = 0; i < 5; i++){
-        printHand(&game.botHands[i]);
         bot_PreFlop(&game, i);
         printf("\n");
     }
@@ -43,7 +42,6 @@ int main(void){
     printf("\nFlop\n");
     for(int i = 0; i < 5; i++){
         if(game.bots[i].folded == 0 && game.bots[i].active == 1){
-            printHand(&game.botHands[i]);
             bot_Flop(&game, i);
         }
     }
@@ -60,7 +58,6 @@ int main(void){
     printHand(&game.boardHand);
     for(int i = 0; i < 5; i++){
         if(game.bots[i].folded == 0 && game.bots[i].active == 1){
-            printHand(&game.botHands[i]);
             bot_Turn(&game, i);
         }
     }
@@ -77,7 +74,6 @@ int main(void){
     printHand(&game.boardHand);
     for(int i = 0; i < 5; i++){
         if(game.bots[i].folded == 0 && game.bots[i].active == 1){
-            printHand(&game.botHands[i]);
             printf("Calling bot_River\n");
             bot_River(&game, i);
         }
@@ -89,6 +85,11 @@ int main(void){
     PlayerActionExec(game.playerChoice, &game.player, &game.board);
     printf("playerChips%d\n",game.player.chips);
     //showdown!
+    for(int i = 0; i < 5; i++){
+        if(game.bots[i].active == 1 && game.bots[i].folded == 0 ){
+            printHand(&game.botHands[i]);
+        }
+    } 
     int playerEval, bot1Eval, bot2Eval, bot3Eval, bot4Eval, bot5Eval;
     if(game.player.active == 1 && game.player.folded == 0){playerEval = evaluateMain(&game.playerHand, &game.boardHand);}
     if(game.bots[0].active == 1 && game.bots[0].folded == 0){bot1Eval = evaluateMain(&game.botHands[0], &game.boardHand);}
@@ -138,5 +139,6 @@ int main(void){
         chip_counter_max += game.bots[i].chips;
     }
     printf("ChipCounter:%d\n",chip_counter_max);
+    
     return 0;
 }
