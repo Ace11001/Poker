@@ -22,5 +22,6 @@ void sizeDemo();
 void showdownScreen();
 void botWindow(int xCord, int yCord, char* botName, int chips, int bet, int colIndex, int foldedStatus, int activeStatus);
 void cardPrint(int xCord,int yCord, int rank, int suit);
-void drawFrame(GAME *g);
+int inputpl(GAME *g);
+void drawFrame(GAME *g, int reqInput);
 #endif

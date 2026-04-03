@@ -146,7 +146,23 @@ void cardPrint(int xCord,int yCord, int rank, int suit){
         printf("└─────┘");
     }
 }
-void drawFrame(GAME *g){
+int inputpl(GAME *g){
+    gotoxy(55,21);
+    printf(" Enter choice:");
+    gotoxy(69,21);
+    int x;//user choice
+    scanf("%d",&x);
+    if(x == 0 || x == 1 || x == 2 || x == 3){
+        g->playerChoice = x;
+    }else{
+        gotoxy(55,23);
+        printf("invalid input      ");
+        _sleep(750);
+        inputpl(g);
+    }
+    return x;
+}
+void drawFrame(GAME *g, int reqInput){
     system("chcp 65001");
     system("cls");
     //bot boxes
@@ -164,22 +180,16 @@ void drawFrame(GAME *g){
     for(int i = 0; i < 74; i ++){
         printf("─");
     }
-    gotoxy(1,8);
-    for(int i = 0; i < 74; i ++){
-        printf("─");
-    }
-    gotoxy(1,7);
-    printf("Status: "YELLOW"%s"RESET, "Hello world"); //<==Add status messages
     //Community Area
-    gotoxy(1,9);
+    gotoxy(1,7);
     printf("Community Cards");
-    gotoxy(1,10);
+    gotoxy(1,8);
     int potsize = g->board.pot;
     printf(" > Pot:   "YELLOW"%-4d"RESET, potsize);
-    gotoxy(1,11);
+    gotoxy(1,9);
     int minbet = g->board.minBet;
     printf(" > MinBet:"YELLOW"%-4d"RESET,minbet);
-    gotoxy(65,9);
+    gotoxy(65,7);
     int round = g->round;
     printf("Round: %-3d", round);
     
@@ -190,18 +200,18 @@ void drawFrame(GAME *g){
     int card5Rank = g->boardHand.cards[4].rank; int card5Suit = g->boardHand.cards[4].suit;
     int comCardCount = g->boardHand.count;
     if(comCardCount >= 3){
-        cardPrint(18, 10, card1Rank,card1Suit);
-        cardPrint(18+8, 10, card2Rank,card2Suit);
-        cardPrint(18+16, 10, card3Rank,card3Suit);
+        cardPrint(18, 8, card1Rank,card1Suit);
+        cardPrint(18+8, 8, card2Rank,card2Suit);
+        cardPrint(18+16, 8, card3Rank,card3Suit);
     }
     if(comCardCount >= 4){
-        cardPrint(18+24, 10, card4Rank,card4Suit);
+        cardPrint(18+24, 8, card4Rank,card4Suit);
     }
     if(comCardCount == 5){
-        cardPrint(18+32, 10, card5Rank,card5Suit);
+        cardPrint(18+32, 8, card5Rank,card5Suit);
     }
     //Player area
-    gotoxy(1,16);
+    gotoxy(1,14);
     for(int i = 0; i < 74; i ++){
         if(i != 53){printf("─");}
         else{printf("┬");}
@@ -215,39 +225,43 @@ void drawFrame(GAME *g){
     int player1Rank = g->playerHand.cards[0].rank; int player1Suit = g->playerHand.cards[0].suit; 
     int player2Rank = g->playerHand.cards[1].rank; int player2Suit = g->playerHand.cards[1].suit;
     if(g->playerHand.count >= 1){
-        cardPrint(29,18, player1Rank,player1Suit);
+        cardPrint(29,16, player1Rank,player1Suit);
     }
     if(g->playerHand.count == 2){
-        cardPrint(39,18, player2Rank,player2Suit);//Magic Numbers, adress
+        cardPrint(39,16, player2Rank,player2Suit);
     }
-    gotoxy(54,17);
+    gotoxy(54,15);
     printf("| Available actions:");
-    gotoxy(54,18);
+    gotoxy(54,16);
     printf("|  ["CYAN"0"RESET"] Call / Check");
-    gotoxy(54,19);
+    gotoxy(54,17);
     printf("|  ["CYAN"1"RESET"] Raise");
-    gotoxy(54,20);
+    gotoxy(54,18);
     printf("|  ["CYAN"2"RESET"] All-In");
-    gotoxy(54,21);
+    gotoxy(54,19);
     printf("|  ["CYAN"3"RESET"] Fold");
-    gotoxy(54,22);
+    gotoxy(54,20);
     printf("├────────────────────");
-    gotoxy(54,23);
+    gotoxy(54,21);
     printf("| Enter choice:");
-    gotoxy(54,24);
+    gotoxy(54,22);
     printf("┴────────────────────");
     //line segment
-    gotoxy(1,24);
+    gotoxy(1,22);
     for(int i = 0; i < 74; i ++){
         if(i != 53){printf("─");}
         else{printf("┴");}
     }
+    if(reqInput == 1){
+        int response = inputpl(g);
+        g->playerChoice = response;
+    }
+    gotoxy(1,23);
 }
 //  TO-DO
 //  - Add input
 //  - Add Linux and MAC support
 //  - Add a showdown screen, show all cards of active players
-//  - Add a size-reffrence screen before game begins so the player can resize the terminal window
 /*
 LINUX version
 #include <stdio.h>

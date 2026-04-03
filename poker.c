@@ -22,19 +22,52 @@ int main(void){
     GAME game;
     initGame(&game);
     printf(BLUE"SETUP END"RESET"\n\n");
+    //Start
+    initGame(&game);
     sizeDemo();
-    showdownScreen();
-    initPlayer(&game.player, game.startingChips, "Player");
-    dealToHand(&game.boardHand, deck, &game.deckTop);
-    dealToHand(&game.boardHand, deck, &game.deckTop);
-    dealToHand(&game.boardHand, deck, &game.deckTop);
-    dealToHand(&game.boardHand, deck, &game.deckTop);
-    dealToHand(&game.boardHand, deck, &game.deckTop);
+    game.statusMSG = "Start of round";
+    drawFrame(&game, 0);
+    _sleep(1000);
+    game.statusMSG = "Betting start";
+    drawFrame(&game, 1);
+    PlayerActionExec(game.playerChoice, &game.player, &game.board);
+    switch(game.playerChoice){
+        case 0:
+            game.statusMSG = "Player Checks/Calls";
+            break;
+        case 1:
+            game.statusMSG = "Player Raises";
+            break;
+        case 2:
+            game.statusMSG = "Player goes ALL-IN";
+            break;
+        case 3:
+            game.statusMSG = "Player folds";
+            break;
+        default: break;
+    }
+    drawFrame(&game, 0);
+    for(int i = 0; i < 5; i++){
+        game.bots[i].bet = game.board.minBet;
+        placeInPot(&game.bots[i],&game.board);
+    }
+    dealToActivePlayers(&game);
+    for(int i = 0; i < 5; i++){
+        bot_PreFlop(&game, i);
+        drawFrame(&game, 0);
+        printf("Bot %d's turn\n", i+1);
+        _sleep(2000);
+    }
+    if(game.board.minBet > game.player.bet){
+        drawFrame(&game, 1);
+        for(int i = 0; i < 5; i++){
+            bot_PreFlop(&game, i);
+            drawFrame(&game, 0);
+            printf("Bot %d's turn\n", i+1);
+            _sleep(2000);
+        }
+    }
+    drawFrame(&game, 0);
 
-    dealToHand(&game.playerHand, deck, &game.deckTop);
-    dealToHand(&game.playerHand, deck, &game.deckTop);
-
-    drawFrame(&game);
-    
     return 0;
-}
+} 

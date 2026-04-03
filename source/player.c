@@ -46,16 +46,11 @@ void Player_Raise(Player *p,Board *b){
     int currPot = b->pot;
     int playerBet = p->bet;
     int playerRaiseAmount;
-    printf("Current information:\n");
-    printf("  >Current Pot:%-4d\n",currPot);
-    printf("  >Your current bet:%-4d\n",playerBet);
-    printf("  >Current minimal bet:%d\n",b->minBet);
     printf(">Enter the amount you want to raise:");
     scanf("%d",&playerRaiseAmount);
     p->bet += playerRaiseAmount;
     placeInPot(p,b);
     b->minBet = playerRaiseAmount;
-    printf("%s raises %d\n",p->name,playerRaiseAmount);
 }
 void Player_ALLIN(Player *p, Board *b){
     printf("%s goes All-In!!!\n",p->name);

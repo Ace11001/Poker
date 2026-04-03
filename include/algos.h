@@ -1,6 +1,6 @@
 #ifndef ALGOS_H
 #define ALGOS_H
-#include <math.h>
+#include <string.h>
 #include "deck.h"
 #include "hand.h"
 #include "game.h"

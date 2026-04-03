@@ -20,6 +20,9 @@ typedef struct GAME{
     int numberofActive;
     int playerChoice;
     int deckTop;
+
+    char* statusMSG;
+    int noMoreRaises;
 }GAME;
 void initGame(GAME *g);
 void testFindWinner(int playerScore, int botScores[], int numBots, GAME *g);

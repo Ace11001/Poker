@@ -12,6 +12,8 @@ void initGame(GAME *g){
     g->numberOfPlayers = 6;
     g->numberofActive = 6;
     g->startingChips = 1000;
+    g->statusMSG = "Hello World";
+    g->noMoreRaises = 0;
     initPlayer(&(g->player), (g->startingChips),"Player");
     initPlayer(&(g->bots[0]),(g->startingChips),"Bot 1");
     initPlayer(&(g->bots[1]),(g->startingChips),"Bot 2");
