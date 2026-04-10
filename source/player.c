@@ -58,8 +58,6 @@ void Player_ALLIN(Player *p, Board *b){
     int AllInSize = p->chips;
     p->bet = AllInSize;
     b->minBet = AllInSize;
-    placeInPot(p,b);
-    p->chips = 0;
     b->AllInStatus=1;
     b->AllInSize = AllInSize;
 }

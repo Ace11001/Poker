@@ -71,7 +71,7 @@ void showdownScreen(){
     *    /___/_//_/\___/__,__/\_,_/\___/__,__/_//_/ (_) (_) (_)  
     *                                                            
  */
-    safeguard();
+    system("cls");
     gotoxy(5,6);
     printf(YELLOW"        ______                 __                  __  __  __");
     gotoxy(5,7);
@@ -83,7 +83,6 @@ void showdownScreen(){
     gotoxy(5,10);
     printf("                                                              "RESET);
     gotoxy(5,12);
-    system("pause");
 }
 
 void botWindow(int xCord, int yCord, char* botName, int chips, int bet, int colIndex, int foldedStatus, int activeStatus){
@@ -196,17 +195,11 @@ void communityWindow(GAME *g){
     int card4Rank = g->boardHand.cards[3].rank; int card4Suit = g->boardHand.cards[3].suit;
     int card5Rank = g->boardHand.cards[4].rank; int card5Suit = g->boardHand.cards[4].suit;
     int comCardCount = g->boardHand.count;
-    if(comCardCount >= 3){
-        cardPrint(18, 8, card1Rank,card1Suit);
-        cardPrint(18+8, 8, card2Rank,card2Suit);
-        cardPrint(18+16, 8, card3Rank,card3Suit);
-    }
-    if(comCardCount >= 4){
-        cardPrint(18+24, 8, card4Rank,card4Suit);
-    }
-    if(comCardCount == 5){
-        cardPrint(18+32, 8, card5Rank,card5Suit);
-    }
+    if(comCardCount >= 1){cardPrint(18, 8, card1Rank,card1Suit);}
+    if(comCardCount >= 2){cardPrint(18+8, 8, card2Rank,card2Suit);}
+    if(comCardCount >= 3){cardPrint(18+16, 8, card3Rank,card3Suit);}
+    if(comCardCount >= 4){cardPrint(18+24, 8, card4Rank,card4Suit);}
+    if(comCardCount == 5){cardPrint(18+32, 8, card5Rank,card5Suit);}
     safeguard();
 }
 void playerWindow(GAME *g){
