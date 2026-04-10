@@ -25,49 +25,38 @@ int main(void){
     //Start
     initGame(&game);
     sizeDemo();
-    game.statusMSG = "Start of round";
-    drawFrame(&game, 0);
-    _sleep(1000);
-    game.statusMSG = "Betting start";
-    drawFrame(&game, 1);
-    PlayerActionExec(game.playerChoice, &game.player, &game.board);
-    switch(game.playerChoice){
-        case 0:
-            game.statusMSG = "Player Checks/Calls";
-            break;
-        case 1:
-            game.statusMSG = "Player Raises";
-            break;
-        case 2:
-            game.statusMSG = "Player goes ALL-IN";
-            break;
-        case 3:
-            game.statusMSG = "Player folds";
-            break;
-        default: break;
-    }
-    drawFrame(&game, 0);
-    for(int i = 0; i < 5; i++){
-        game.bots[i].bet = game.board.minBet;
-        placeInPot(&game.bots[i],&game.board);
-    }
     dealToActivePlayers(&game);
-    for(int i = 0; i < 5; i++){
-        bot_PreFlop(&game, i);
-        drawFrame(&game, 0);
-        printf("Bot %d's turn\n", i+1);
-        _sleep(2000);
-    }
-    if(game.board.minBet > game.player.bet){
-        drawFrame(&game, 1);
+    drawFrame(&game);
+    
+    
+    
+    //start of betting round - PREFLOP
+    while(!allBetOrFolded(&game)){
         for(int i = 0; i < 5; i++){
-            bot_PreFlop(&game, i);
-            drawFrame(&game, 0);
-            printf("Bot %d's turn\n", i+1);
-            _sleep(2000);
+            if(game.bots[i].folded == 0 && game.bots[i].active == 1){
+                gotoxy(3 + ((i-1)*15), 2);
+                printf(" ");
+                gotoxy(1,23);
+
+                bot_PreFlop(&game, i);
+
+                updateBotWindow(&game, i);
+                communityWindow(&game);
+                gotoxy(3 + (i*15), 2);
+                ColPrintfBot(">",i);
+                gotoxy(1,23);
+                _sleep(1500);
+            }
         }
+        gotoxy(3+60,2);printf(" ");
+        game.playerChoice == inputpl(&game);
+        PlayerActionExec(game.playerChoice, &game.player, &game.board);
+        playerWindow(&game);
+        communityWindow(&game);
     }
-    drawFrame(&game, 0);
+    //end ofbetting round - PREFLOP
+    autoPot(&game);
+    drawFrame(&game);//redraw whole frame for convenience
 
     return 0;
-} 
+}

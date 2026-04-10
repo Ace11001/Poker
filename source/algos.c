@@ -342,42 +342,39 @@ void bot_PreFlop(GAME *g, int botIndex){
         printf("bot%d PreFlop Score: %lf\n",botIndex+1,score);
         */
         if(score < 0.04){
-            //fold
+            //FOLD
             g->bots[botIndex].folded = 1;
             printf("Bot%d folds\n",1+botIndex);
-            return;
         } else if(score < 0.10){
-            if(g->board.minBet > 2){//fold if someone raised before; also magic number, fix later
+            if(g->board.minBet > 2){
+                //FOLD              magic number, fix later
                 g->bots[botIndex].folded=1;
                 printf("Bot%d folds\n",1+botIndex);
-                return;
             }else{
-                g->bots[botIndex].bet = g->board.minBet;
+                //CALL
+                if(g->bots[botIndex].bet != g->board.minBet){
+                    g->bots[botIndex].bet = g->board.minBet;
+                }
                 printf("Bot%d calls\n",1+botIndex);
-                placeInPot(&g->bots[botIndex], &g->board);
-                return;
             }
         } else if(score < 0.30){
-            //call
-            g->bots[botIndex].bet = g->board.minBet;
+            //CALL
+            if(g->bots[botIndex].bet != g->board.minBet){
+                g->bots[botIndex].bet = g->board.minBet;
+            }
             printf("Bot%d calls\n",botIndex+1);
-            placeInPot(&g->bots[botIndex], &g->board);
-            return;
         } else if(score < 0.55){
-            //raise 3 bet
+            //RAISE
             g->bots[botIndex].bet = 6; //magic number, fix later
             g->board.minBet = g->bots[botIndex].bet;
             printf("Bot%d raises %d\n",botIndex+1,g->bots[botIndex].bet);
-            placeInPot(&g->bots[botIndex], &g->board);
-            return;
         } else{
-            //raise 4 bet
+            //RAISE
             g->bots[botIndex].bet = 12; //magic number, fix later
             g->board.minBet = g->bots[botIndex].bet;
             printf("Bot%d raises %d\n",botIndex+1,g->bots[botIndex].bet);
-            placeInPot(&g->bots[botIndex], &g->board);
-            return;
         }
+        //placeInPot(&g->bots[botIndex], &g->board);
     }else{return;}
 }
 void bot_Flop(GAME *g, int botIndex) {

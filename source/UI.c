@@ -19,6 +19,14 @@
 void gotoxy(int x,int y){
     printf("%c[%d;%df",0x1B,y,x);
 }
+void safeguard(){
+    gotoxy(1,23);
+    for(int i = 0; i < 74; i ++){
+        printf(" ");
+    }
+    gotoxy(1,23);
+}
+
 void sizeDemo(){
     system("cls");
     gotoxy(1,1);
@@ -48,6 +56,12 @@ void sizeDemo(){
     system("pause");
 }
 
+void testClearScreen(){
+    printf("\033[2J\033[1;1H");
+    fflush(stdout);
+}
+
+
 void showdownScreen(){
     //74x25
     /**
@@ -57,6 +71,7 @@ void showdownScreen(){
     *    /___/_//_/\___/__,__/\_,_/\___/__,__/_//_/ (_) (_) (_)  
     *                                                            
  */
+    safeguard();
     gotoxy(5,6);
     printf(YELLOW"        ______                 __                  __  __  __");
     gotoxy(5,7);
@@ -162,25 +177,7 @@ int inputpl(GAME *g){
     }
     return x;
 }
-void drawFrame(GAME *g, int reqInput){
-    system("chcp 65001");
-    system("cls");
-    //bot boxes
-    int b1C = g->bots[0].chips;int b2C = g->bots[1].chips;int b3C = g->bots[2].chips;int b4C = g->bots[3].chips;int b5C = g->bots[4].chips;
-    int b1B = g->bots[0].bet;int b2B = g->bots[1].bet;int b3B = g->bots[2].bet;int b4B = g->bots[3].bet;int b5B = g->bots[4].bet;
-    int b1F = g->bots[0].folded;int b2F = g->bots[1].folded;int b3F = g->bots[2].folded;int b4F = g->bots[3].folded;int b5F = g->bots[4].folded;
-    int b1A = g->bots[0].active;int b2A = g->bots[1].active;int b3A = g->bots[2].active;int b4A = g->bots[3].active;int b5A = g->bots[4].active;
-    botWindow(1     , 1, "Bot 1", b1C, b1B, 0, b1F, b1A);
-    botWindow(1 + 15, 1, "Bot 2", b2C, b2B, 1, b2F, b2A);
-    botWindow(1 + 30, 1, "Bot 3", b3C, b3B, 2, b3F, b3A);
-    botWindow(1 + 45, 1, "Bot 4", b4C, b4B, 3, b4F, b4A);
-    botWindow(1 + 60, 1, "Bot 5", b5C, b5B, 4, b5F, b5A);
-    //line segment
-    gotoxy(1,6);
-    for(int i = 0; i < 74; i ++){
-        printf("─");
-    }
-    //Community Area
+void communityWindow(GAME *g){
     gotoxy(1,7);
     printf("Community Cards");
     gotoxy(1,8);
@@ -210,7 +207,9 @@ void drawFrame(GAME *g, int reqInput){
     if(comCardCount == 5){
         cardPrint(18+32, 8, card5Rank,card5Suit);
     }
-    //Player area
+    safeguard();
+}
+void playerWindow(GAME *g){
     gotoxy(1,14);
     for(int i = 0; i < 74; i ++){
         if(i != 53){printf("─");}
@@ -243,21 +242,70 @@ void drawFrame(GAME *g, int reqInput){
     gotoxy(54,20);
     printf("├────────────────────");
     gotoxy(54,21);
-    printf("| Enter choice:");
+    printf("| Enter choice:  ");
     gotoxy(54,22);
     printf("┴────────────────────");
+    safeguard();
+}
+
+void drawFrame(GAME *g){
+    system("chcp 65001");
+    system("cls");
+    testClearScreen();
+    //bot boxes
+    int b1C = g->bots[0].chips;int b2C = g->bots[1].chips;int b3C = g->bots[2].chips;int b4C = g->bots[3].chips;int b5C = g->bots[4].chips;
+    int b1B = g->bots[0].bet;int b2B = g->bots[1].bet;int b3B = g->bots[2].bet;int b4B = g->bots[3].bet;int b5B = g->bots[4].bet;
+    int b1F = g->bots[0].folded;int b2F = g->bots[1].folded;int b3F = g->bots[2].folded;int b4F = g->bots[3].folded;int b5F = g->bots[4].folded;
+    int b1A = g->bots[0].active;int b2A = g->bots[1].active;int b3A = g->bots[2].active;int b4A = g->bots[3].active;int b5A = g->bots[4].active;
+    botWindow(1     , 1, "Bot 1", b1C, b1B, 0, b1F, b1A);
+    botWindow(1 + 15, 1, "Bot 2", b2C, b2B, 1, b2F, b2A);
+    botWindow(1 + 30, 1, "Bot 3", b3C, b3B, 2, b3F, b3A);
+    botWindow(1 + 45, 1, "Bot 4", b4C, b4B, 3, b4F, b4A);
+    botWindow(1 + 60, 1, "Bot 5", b5C, b5B, 4, b5F, b5A);
+    //line segment
+    gotoxy(1,6);
+    for(int i = 0; i < 74; i ++){
+        printf("─");
+    }
+    communityWindow(g);
+    //Player area
+    playerWindow(g);
     //line segment
     gotoxy(1,22);
     for(int i = 0; i < 74; i ++){
         if(i != 53){printf("─");}
         else{printf("┴");}
     }
-    if(reqInput == 1){
-        int response = inputpl(g);
-        g->playerChoice = response;
+    safeguard();
+}
+
+void updateBotWindow(GAME *g, int botIndex){
+    int foldedStatus = g->bots[botIndex].folded;
+    int activeStatus = g->bots[botIndex].active;
+    int chips = g->bots[botIndex].chips;
+    int bet = g->bots[botIndex].bet;
+    switch(botIndex){
+        case 0:
+            botWindow(1,1,"Bot 1",chips,bet,0,foldedStatus,activeStatus);
+            break;
+        case 1:
+            botWindow(16,1,"Bot 2",chips,bet,1,foldedStatus,activeStatus);
+            break;
+        case 2:
+            botWindow(31,1,"Bot 3",chips,bet,2,foldedStatus,activeStatus);
+            break;
+        case 3:
+            botWindow(46,1,"Bot 4",chips,bet,3,foldedStatus,activeStatus);
+            break;
+        case 4:
+            botWindow(61,1,"Bot 5",chips,bet,4,foldedStatus,activeStatus);
+            break;
+        default:break;
     }
     gotoxy(1,23);
 }
+
+
 //  TO-DO
 //  - Add input
 //  - Add Linux and MAC support

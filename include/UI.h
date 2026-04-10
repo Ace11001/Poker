@@ -18,10 +18,17 @@
 #define ITALIC "\033[1;34;3m" 
 
 void gotoxy(int x, int y);
+void safeguard();
 void sizeDemo();
+void testClearScreen();
 void showdownScreen();
 void botWindow(int xCord, int yCord, char* botName, int chips, int bet, int colIndex, int foldedStatus, int activeStatus);
 void cardPrint(int xCord,int yCord, int rank, int suit);
 int inputpl(GAME *g);
-void drawFrame(GAME *g, int reqInput);
+void communityWindow(GAME *g);
+void playerWindow(GAME *g);
+
+void drawFrame(GAME *g);
+
+void updateBotWindow(GAME *g, int botIndex);
 #endif

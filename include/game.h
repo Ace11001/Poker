@@ -28,5 +28,6 @@ void initGame(GAME *g);
 void testFindWinner(int playerScore, int botScores[], int numBots, GAME *g);
 void testRound(GAME *g);
 void dealToActivePlayers(GAME *g);
-
+int allBetOrFolded(GAME *game);
+void autoPot(GAME *g);
 #endif

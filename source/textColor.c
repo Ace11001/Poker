@@ -1,6 +1,14 @@
 #include <stdio.h>
 #define BLUE "\033[34m" //0
 #define RED "\e[0;31m" //1
+//bot colors
+//bot names
+#define CYAN "\e[0;36m"    //0
+#define MAGENTA "\e[0;35m" //1
+#define GREEN "\e[0;32m"   //2
+      //red from above     //3
+#define BYELLOW "\e[0;93m" //4
+
 #define RESET "\033[0m"
 
 void ColPrintf(char* str,int colorChoice){
@@ -12,6 +20,33 @@ void ColPrintf(char* str,int colorChoice){
         case 1:
             printf(RED"%s",str);
             printf(RESET);        
+            break;
+        //more colors to be added
+        default:
+            printf("%s",str);
+    }
+}
+void ColPrintfBot(char* str, int clrChoice){
+    switch(clrChoice){
+        case 0:
+            printf(CYAN"%s",str);
+            printf(RESET);        
+            break;
+        case 1:
+            printf(MAGENTA"%s",str);
+            printf(RESET);        
+            break;
+        case 2:
+            printf(GREEN"%s",str);
+            printf(RESET);
+            break;
+        case 3:
+            printf(RED"%s",str);
+            printf(RESET);
+            break;
+        case 4:
+            printf(BYELLOW"%s",str);
+            printf(RESET);
             break;
         //more colors to be added
         default:

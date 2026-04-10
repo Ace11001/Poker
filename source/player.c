@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include "board.h"
 #include "textColor.h"
+#include "UI.h"
 
 void initPlayer(Player *p, int startingChips, char* name){
     p->name = name;
@@ -37,34 +38,33 @@ int playerAction(){
     printf("\n");
     return choice;
 }
-void Player_Call_Check(Player *p, Board *b){
-    p->bet = b->minBet;
-    placeInPot(p, b);
-    printf("%s's move: Call/Check\n",p->name);
+void Player_Call_Check(Player *p, Board *b) {
+    int diff = b->minBet - p->bet;
+    if (diff > 0) {
+        p->bet += diff;
+    }
 }
 void Player_Raise(Player *p,Board *b){
     int currPot = b->pot;
     int playerBet = p->bet;
     int playerRaiseAmount;
-    printf(">Enter the amount you want to raise:");
+    gotoxy(1,23);
+    printf(">Enter the amount you want to bet(minimal: %d):", b->minBet+1);
     scanf("%d",&playerRaiseAmount);
-    p->bet += playerRaiseAmount;
-    placeInPot(p,b);
-    b->minBet = playerRaiseAmount;
+    p->bet = playerRaiseAmount;
+    b->minBet = p->bet;
 }
 void Player_ALLIN(Player *p, Board *b){
-    printf("%s goes All-In!!!\n",p->name);
     int AllInSize = p->chips;
     p->bet = AllInSize;
+    b->minBet = AllInSize;
     placeInPot(p,b);
     p->chips = 0;
     b->AllInStatus=1;
     b->AllInSize = AllInSize;
 }
 void Player_Fold(Player *p,Board *b){
-    printf("%s Folded!!!\n",p->name);
     p->folded = 1;
-    placeInPot(p,b);
 }
 void PlayerActionExec(int choice, Player *p, Board *b){
     switch(choice){

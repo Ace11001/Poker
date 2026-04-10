@@ -152,3 +152,24 @@ void testRound(GAME *g){
     }
     testFindWinner(playerScore, botScores, 5, g);
 }
+int allBetOrFolded(GAME *game){
+    // Check bots
+    for (int i = 0; i < 5; i++) {
+        if (game->bots[i].active && !game->bots[i].folded && game->bots[i].bet != game->board.minBet) {
+            return 0;
+        }
+    }
+    // Check player
+    if (game->player.active && !game->player.folded && game->player.bet != game->board.minBet) {
+        return 0;
+    }
+    return 1;
+}
+void autoPot(GAME *g){
+    placeInPot(&g->player, &g->board);
+    g->player.bet = 0;
+    for(int i = 0; i < 5; i++){
+        placeInPot(&g->bots[i], &g->board);
+        g->bots[i].bet = 0;
+    }
+}
