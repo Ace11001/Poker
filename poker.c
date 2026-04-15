@@ -9,7 +9,6 @@
 #include "algos.h"
 #include "textColor.h"
 #include "game.h"
-#include "game.h"
 #include "UI.h"
 #include "bots.h"
 #include "log.h"
@@ -24,6 +23,7 @@ void log_timestamp(FILE *logfp) {
     struct tm *t = localtime(&now);
     fprintf(logfp, "at %.2d:%.2d:%.2d\n",t->tm_hour, t->tm_min, t->tm_sec);
 }
+
 
 int main(void){
     //LOGS
@@ -250,10 +250,10 @@ int main(void){
     int playerEval, bot1Eval, bot2Eval, bot3Eval, bot4Eval, bot5Eval;
     if(game.player.active == 1 && game.player.folded == 0){playerEval = evaluateMain(&game.playerHand, &game.boardHand);}
     if(game.bots[0].active == 1 && game.bots[0].folded == 0){bot1Eval = evaluateMain(&game.botHands[0], &game.boardHand);}
-    if(game.bots[1].active == 1 && game.bots[0].folded == 0){bot2Eval = evaluateMain(&game.botHands[1], &game.boardHand);}
-    if(game.bots[2].active == 1 && game.bots[0].folded == 0){bot3Eval = evaluateMain(&game.botHands[2], &game.boardHand);}
-    if(game.bots[3].active == 1 && game.bots[0].folded == 0){bot4Eval = evaluateMain(&game.botHands[3], &game.boardHand);}
-    if(game.bots[4].active == 1 && game.bots[0].folded == 0){bot5Eval = evaluateMain(&game.botHands[4], &game.boardHand);}
+    if(game.bots[1].active == 1 && game.bots[1].folded == 0){bot2Eval = evaluateMain(&game.botHands[1], &game.boardHand);}
+    if(game.bots[2].active == 1 && game.bots[2].folded == 0){bot3Eval = evaluateMain(&game.botHands[2], &game.boardHand);}
+    if(game.bots[3].active == 1 && game.bots[3].folded == 0){bot4Eval = evaluateMain(&game.botHands[3], &game.boardHand);}
+    if(game.bots[4].active == 1 && game.bots[4].folded == 0){bot5Eval = evaluateMain(&game.botHands[4], &game.boardHand);}
     
     int bestEval = -1;
     int bestPlayerId = -1;  // 0–4 bots, 5 player

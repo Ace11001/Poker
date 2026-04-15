@@ -23,3 +23,7 @@ void printHand(Hand* hand){
     }
     printf("\n");
 }
+
+void clearHand(Hand* hand){
+    hand->count = 0;
+}

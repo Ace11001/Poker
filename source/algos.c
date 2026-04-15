@@ -56,8 +56,9 @@ int ChensFormula(Hand* h) {
         }
     }
 
-    int result = (int)score%1 + 1;
-    if (result < 1) result = 1;  // never returns 0
+    int result = (int)(score + 0.5);  // Round to nearest integer
+    if (result < 1) result = 1;
+    if (result > 20) result = 20;  // Cap at reasonable max
     return result;
 }
 int SklanskyMalmuth(Hand *h) {  

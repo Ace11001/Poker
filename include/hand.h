@@ -13,5 +13,6 @@ typedef struct {
 void initHand(Hand* hand, Player *player);
 void dealToHand(Hand* hand, Card* deck, int* deckTop);
 void printHand(Hand* hand);
+void clearHand(Hand* hand);
 
 #endif

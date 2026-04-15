@@ -32,7 +32,7 @@ double botAnalysis(GAME *g, int botIndex, int phase, FILE *logfp){//phase - 0Pre
     fprintf(logfp, "GAP: %d -> norm=%.3f\n", gap, gap_norm);
     fflush(logfp);
 
-    double scorePreFlop = 0.4 * chen_norm + 0.4 * sklMal_norm + 0.2 * gap_norm;
+    double scorePreFlop = 0.3 * chen_norm + 0.4 * sklMal_norm + 0.3 * gap_norm;
     if(phase == 0){
         fprintf(logfp, ">scorePreFlop: %.3f\n", scorePreFlop);
         fflush(logfp);
@@ -80,11 +80,11 @@ int calculateRaise(GAME *g, int botIndex, int phase){
 
     // 1. Pick a baseline raise‑size (as a fraction of pot)
 
-    double raiseMult = 1.0;
-    if(phase == 0) raiseMult = 2.0;   // 2x pot preflop (standard raise)
-    if(phase == 1) raiseMult = 0.7;   // 0.7x pot on flop
-    if(phase == 2) raiseMult = 0.7;   // 0.7x pot on turn
-    if(phase == 3) raiseMult = 0.5;   // 0.5x pot on river
+    double raiseMult = 0.5;
+    if(phase == 0) raiseMult = 0.5;   // Smaller raises to prevent exponential growth
+    if(phase == 1) raiseMult = 0.3;
+    if(phase == 2) raiseMult = 0.3;
+    if(phase == 3) raiseMult = 0.2;
 
     raise = minBet + (int)(pot * raiseMult);
 
@@ -99,17 +99,17 @@ int calculateRaise(GAME *g, int botIndex, int phase){
 
     // 3. Your existing maxRaise caps per phase
 
-    if(phase == 0 && availableChips > 150){
+    if(phase == 0 && availableChips > 50){
+        maxRaise = 50;
+    }
+    else if(phase == 1 && availableChips > 100){
+        maxRaise = 100;
+    }
+    else if(phase == 2 && availableChips > 150){
         maxRaise = 150;
     }
-    else if(phase == 1 && availableChips > 250){
-        maxRaise = 250;
-    }
-    else if(phase == 2 && availableChips > 350){
-        maxRaise = 350;
-    }
-    else if(phase == 3 && availableChips > 550){
-        maxRaise = 550;
+    else if(phase == 3 && availableChips > 200){
+        maxRaise = 200;
     }
     else{
         maxRaise = availableChips;
@@ -159,10 +159,10 @@ void decisionTree(GAME *g, int botIndex,int phase, double finalScore,double fold
         fflush(logfp);
         return;
     }else if(finalScore < callThreshold){
-        if(g->board.minBet > 12){
-            //FOLD
+        if(g->board.minBet > 12 && g->numberofActive > 2){
+            //FOLD only if more than 2 players active
             g->bots[botIndex].folded = 1;
-            fprintf(logfp,">BOT FOLD - finalScore < callThreshold && g->board.minbet > 12\n\n");
+            fprintf(logfp,">BOT FOLD - finalScore < callThreshold && g->board.minbet > 12 && active > 2\n\n");
             fflush(logfp);
             return;
         }else{
@@ -346,6 +346,17 @@ void botLogic3(GAME *g, int botIndex, int phase, FILE *logfp){
     }else{
         analysisScore = 0.5 * analysisScore + 0.5 * cardScore;
     }
+    
+    // Add situational factors
+    // Tightness factor: fewer active players = tighter play
+    int activePlayers = g->numberofActive;
+    double tightnessFactor = (6 - activePlayers) / 5.0;  // 0 when 6 players, 1 when 1 player
+    analysisScore -= 0.05 * tightnessFactor;
+    // Add small randomness to avoid predictability
+    analysisScore += ((double)rand() / RAND_MAX - 0.5) * 0.1;  // +/- 0.05
+    // Clamp to [0,1]
+    if(analysisScore > 1.0) analysisScore = 1.0;
+    if(analysisScore < 0.0) analysisScore = 0.0;
     
     fprintf(logfp, ">Total Analysis Score:%f\n",analysisScore);
     fflush(logfp);

@@ -1,5 +1,6 @@
 #include "player.h"
 #include <stdio.h>
+#include <stdlib.h>
 #include "board.h"
 #include "textColor.h"
 #include "UI.h"
