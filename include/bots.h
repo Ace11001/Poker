@@ -6,7 +6,7 @@
 #include "game.h"
 #include "game.h"
 
-double botAnalysis(GAME *g, int botIndex, int phase);
+double botAnalysis(GAME *g, int botIndex, int phase, FILE *logfp);
 int calculateRaise(GAME *g, int botIndex, int phase);
 int chipAdvantage(GAME *g, int botIndex);
 void decisionTree(GAME *g, int botIndex, int phase, double finalScore,double foldThreshold, double callThreshold, double raiseThreshold, double ALLIN_threshold, FILE logfp);

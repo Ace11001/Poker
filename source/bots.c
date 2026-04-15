@@ -6,16 +6,19 @@
 #include "UI.h"
 #include "log.h"
 
-double botAnalysis(GAME *g, int botIndex, int phase){//phase - 0Preflop, 1FLop, 2Turn, 3River
-    
-    
-    
+double botAnalysis(GAME *g, int botIndex, int phase, FILE *logfp){//phase - 0Preflop, 1FLop, 2Turn, 3River
     int botId = botIndex + 1;
     int Astatus = g->bots[botIndex].active;
     int Fstatus = g->bots[botIndex].folded;
-    if(Astatus != 1 || Fstatus == 1){
-        return -1.0; // Bot should disregards analysis
+    const char* phase_names[] = {"PreFlop", "Flop", "Turn", "River"};
+    int chipsLOG; int betLOG;
+    chipsLOG = g->bots[botIndex].chips; betLOG = g->bots[botIndex].bet;
+    fprintf(logfp, ">phase %s|active=%d|folded=%d|chips:%d|bet:%d\n", phase_names[phase], Astatus, Fstatus, chipsLOG, betLOG);
+    if (Astatus != 1 || Fstatus == 1) {
+        fprintf(logfp, ">BOT%d: skipped, returning -1\n", botIndex+1);
+        return -1.0;
     }
+    fflush(logfp);
     int chen = ChensFormula(&g->botHands[botIndex]);
     int sklMal = SklanskyMalmuth(&g->botHands[botIndex]);
     int gap = gapScoreLen(&g->botHands[botIndex], g->botHands[botIndex].count);
@@ -24,9 +27,16 @@ double botAnalysis(GAME *g, int botIndex, int phase){//phase - 0Preflop, 1FLop, 
     double sklMal_norm = (sklMal > 0 && sklMal <= 9) ? (sklMal - 1) / 8.0 : 0.0; // Group 1–9
     double gap_norm = (gap >= 0 && gap <= 3) ? gap / 3.0 : 1.0;                  // Gap 0–3
     
+    fprintf(logfp, ">CHEN: %d -> norm=%.3f|", chen, chen_norm);
+    fprintf(logfp, "SKL&MAL: %d -> norm=%.3f|", sklMal, sklMal_norm);
+    fprintf(logfp, "GAP: %d -> norm=%.3f\n", gap, gap_norm);
+    fflush(logfp);
+
     double scorePreFlop = 0.4 * chen_norm + 0.4 * sklMal_norm + 0.2 * gap_norm;
-    if(phase == 0){return scorePreFlop;}
-    
+    if(phase == 0){
+        fprintf(logfp, ">scorePreFlop: %.3f\n", scorePreFlop);
+        fflush(logfp);
+        return scorePreFlop;}
     double scoreFlop;
     if(g->boardHand.count != 0){
         int texture = BoardTexture(&g->boardHand, g->board.communityCount);
@@ -48,10 +58,15 @@ double botAnalysis(GAME *g, int botIndex, int phase){//phase - 0Preflop, 1FLop, 
     double chipBoost = 0.0;
     if(g->bots[botIndex].chips > chipAvg){
         chipBoost = 0.1;
-    }
+    }    
+    
+
     double finalScore = scoreFlop + chipBoost;
     if(finalScore > 1.0) finalScore = 1.0;
     if(finalScore < 0.0) finalScore = 0.0;
+
+    fprintf(logfp, ">BOT%d ANALYSIS - finalScore: %.3f\n",botIndex+1, finalScore);
+    fflush(logfp);
     return finalScore;
 }
 int calculateRaise(GAME *g, int botIndex, int phase){
@@ -140,20 +155,20 @@ void decisionTree(GAME *g, int botIndex,int phase, double finalScore,double fold
     if(finalScore < foldThreshold){
         //FOLD
         g->bots[botIndex].folded = 1;
-        fprintf(logfp,">BOT FOLD - finalScore < foldThreshold\n");
+        fprintf(logfp,">BOT FOLD - finalScore < foldThreshold\n\n");
         fflush(logfp);
         return;
     }else if(finalScore < callThreshold){
         if(g->board.minBet > 12){
             //FOLD
             g->bots[botIndex].folded = 1;
-            fprintf(logfp,">BOT FOLD - finalScore < callThreshold && g->board.minbet > 12\n");
+            fprintf(logfp,">BOT FOLD - finalScore < callThreshold && g->board.minbet > 12\n\n");
             fflush(logfp);
             return;
         }else{
             //CALL
             g->bots[botIndex].bet = min;
-            fprintf(logfp,">BOT CALL - finalScore < callThreshold && !(g->board.minbet > 12)\n");
+            fprintf(logfp,">BOT CALL - finalScore < callThreshold && !(g->board.minbet > 12)\n\n");
             fflush(logfp);
             return;
         }
@@ -161,22 +176,29 @@ void decisionTree(GAME *g, int botIndex,int phase, double finalScore,double fold
         if(g->bots[botIndex].chips - g->board.minBet < 100){
             //CALL
             g->bots[botIndex].bet = min;
-            fprintf(logfp, ">BOT CALL - finalScore < raiseThreshold && chips-bet < 100\n");
+            fprintf(logfp, ">BOT CALL - finalScore < raiseThreshold && chips-bet < 100\n\n");
             fflush(logfp);
             return;
-        }else{
+        }else if(g->bots[botIndex].raiseCount <= 3){
             //RAISE
             int raise = calculateRaise(g, botIndex, phase);
             g->bots[botIndex].bet = raise;
             g->board.minBet = raise;
-            fprintf(logfp, ">BOT RAISE - chips-bet > 100\n");
+            g->bots[botIndex].raiseCount++;
+            fprintf(logfp, ">BOT RAISE - chips-bet > 100\n\n");
+            fflush(logfp);
+            return;
+        }else{
+            //CALL
+            g->bots[botIndex].bet = min;
+            fprintf(logfp, ">BOT CALL - Hit raise limit\n\n");
             fflush(logfp);
             return;
         }
     }else{
         //CALL -until allin works
         g->bots[botIndex].folded = 1;
-        fprintf(logfp, ">BOT CALLS - lack of ALLIN HANDLING\n");
+        fprintf(logfp, ">BOT CALLS - lack of ALLIN HANDLING\n\n");
         fflush(logfp);
         return;
         /*ALL-IN  WIP
@@ -227,7 +249,7 @@ void botLogic2(GAME*g, int botIndex, int phase, FILE *logfp){
             allinT  = 0.95;
             break;
     }
-    double analysisScore = botAnalysis(g, botIndex, phase);
+    double analysisScore = botAnalysis(g, botIndex, phase, logfp);
     int chipAdv = chipAdvantage(g, botIndex);
     decisionTree(g, botIndex, phase, analysisScore, foldT,callT,raiseT,allinT, logfp);
 }
@@ -284,24 +306,27 @@ void botLogic3(GAME *g, int botIndex, int phase, FILE *logfp){
     double foldT, callT, raiseT, allinT;
     switch(phase){
         case 1: // Flop
-            foldT   = 0.2;
-            callT   = 0.4;
-            raiseT  = 0.65;
+            foldT   = 0.0051;      // ≈ preflop level
+            callT   = 0.35;
+            raiseT  = 0.60;
+            break;
         case 2: // Turn
-            foldT   = 0.15;
+            foldT   = 0.00175;
             callT   = 0.45;
-            raiseT  = 0.7;
+            raiseT  = 0.75;
+            break;
         case 3: // River
-            foldT   = 0.15;
+            foldT   = 0.001;
             callT   = 0.45;
-            raiseT  = 0.7;
-
-        default:
-            foldT   = 0.3;
-            callT   = 0.55;
-            raiseT  = 0.7;
+            raiseT  = 0.75;
+            break;
+        default: // Preflop
+            foldT   = 0.005;      // same as flop
+            callT   = 0.2;      // unchanged
+            raiseT  = 0.45;      // unchanged
+            break;
     }
-    double analysisScore = botAnalysis(g, botIndex, phase);
+    double analysisScore = botAnalysis(g, botIndex, phase, logfp);
     double cardScore = 0;
     if(g->boardHand.count == 3){
         Hand5 in1[1];
@@ -316,10 +341,13 @@ void botLogic3(GAME *g, int botIndex, int phase, FILE *logfp){
         permutateCards(&g->botHands[botIndex],&g->boardHand, in3);
         cardScore = botCardEval(g, botIndex, in3, 21);
     }
-    analysisScore = 0.3 * analysisScore + 0.7 * cardScore;
-
-    fprintf(logfp, "BOT%d logic stats:\n",botIndex+1);
-    fprintf(logfp, "AnalysisScore:%f\n",analysisScore);
+    if(phase == 3){
+        analysisScore = 0.2*analysisScore + 0.8 *cardScore;
+    }else{
+        analysisScore = 0.5 * analysisScore + 0.5 * cardScore;
+    }
+    
+    fprintf(logfp, ">Total Analysis Score:%f\n",analysisScore);
     fflush(logfp);
     
     int chipAdv = chipAdvantage(g, botIndex);

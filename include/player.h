@@ -10,6 +10,7 @@ typedef struct Player{
     int folded; //0-active, 1-folded
     int score;  //used for scoring
     int active;
+    int raiseCount;
 } Player;
 
 void initPlayer(Player *p, int startingChips, char* name);

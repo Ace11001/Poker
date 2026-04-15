@@ -11,6 +11,7 @@ void initPlayer(Player *p, int startingChips, char* name){
     p->folded = 0;
     p->score = 0;
     p->active=1;//player is "alive"
+    p->raiseCount = 0;
 }
 void DebugPrintPlayer(Player *p){
     printf(RED);

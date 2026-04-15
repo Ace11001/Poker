@@ -1,6 +1,7 @@
-Startup - Start at 00:48:35
-Startup - End at 00:48:35
-Game Init done at 00:48:35
+Startup - Start at 02:26:23
+Startup - End at 02:26:23
+
+Game Init done at 02:26:23
 Players:6|Active:6|Round:1
 >Player|Active:1|Folded:0|Chips:1000|Bet:0
 >Bot1  |Active:1|Folded:0|Chips:1000|Bet:0
@@ -8,28 +9,197 @@ Players:6|Active:6|Round:1
 >Bot3  |Active:1|Folded:0|Chips:1000|Bet:0
 >Bot4  |Active:1|Folded:0|Chips:1000|Bet:0
 >Bot5  |Active:1|Folded:0|Chips:1000|Bet:0
-Hands dealt at 00:48:36
+
+Hands dealt at 02:26:24
 Cards:
->Player|    5 of Hearts  |    5 of Diamonds
->Bot 1 |   10 of Spades  |    5 of Clubs   
->Bot 2 |    4 of Clubs   |    7 of Clubs   
->Bot 3 |    9 of Diamonds| Jack of Spades  
->Bot 4 |    9 of Spades  |   10 of Diamonds
->Bot 5 |    7 of Diamonds|Queen of Clubs   
+>Player|    7 of Clubs   |    4 of Diamonds
+>Bot 1 |    5 of Diamonds| King of Hearts  
+>Bot 2 |    7 of Hearts  |    9 of Hearts  
+>Bot 3 |    8 of Diamonds|    2 of Spades  
+>Bot 4 |Queen of Spades  | King of Diamonds
+>Bot 5 |    7 of Spades  | King of Spades  
 Board Cards:
 >Board Cards don't exist
+
 BOT1 logic stats:
-AnalysisScore:0.000000
+>phase PreFlop|active=1|folded=0|chips:1000|bet:0
+>CHEN: 1 -> norm=0.000|SKL&MAL: 1 -> norm=0.000|GAP: 0 -> norm=0.000
+>scorePreFlop: 0.000
+>Total Analysis Score:0.000000
 >BOT FOLD - finalScore < foldThreshold
+
 BOT2 logic stats:
-AnalysisScore:0.000000
->BOT FOLD - finalScore < foldThreshold
+>phase PreFlop|active=1|folded=0|chips:1000|bet:0
+>CHEN: 1 -> norm=0.000|SKL&MAL: 5 -> norm=0.500|GAP: 1 -> norm=0.333
+>scorePreFlop: 0.267
+>Total Analysis Score:0.133333
+>BOT CALL - finalScore < callThreshold && !(g->board.minbet > 12)
+
 BOT3 logic stats:
-AnalysisScore:0.050000
+>phase PreFlop|active=1|folded=0|chips:1000|bet:0
+>CHEN: 1 -> norm=0.000|SKL&MAL: 1 -> norm=0.000|GAP: 0 -> norm=0.000
+>scorePreFlop: 0.000
+>Total Analysis Score:0.000000
 >BOT FOLD - finalScore < foldThreshold
+
 BOT4 logic stats:
-AnalysisScore:0.090000
->BOT FOLD - finalScore < foldThreshold
+>phase PreFlop|active=1|folded=0|chips:1000|bet:0
+>CHEN: 1 -> norm=0.000|SKL&MAL: 6 -> norm=0.625|GAP: 3 -> norm=1.000
+>scorePreFlop: 0.450
+>Total Analysis Score:0.225000
+>BOT RAISE - chips-bet > 100
+
 BOT5 logic stats:
-AnalysisScore:0.000000
->BOT FOLD - finalScore < foldThreshold
+>phase PreFlop|active=1|folded=0|chips:1000|bet:0
+>CHEN: 1 -> norm=0.000|SKL&MAL: 3 -> norm=0.250|GAP: 0 -> norm=0.000
+>scorePreFlop: 0.100
+>Total Analysis Score:0.050000
+>BOT CALL - finalScore < callThreshold && !(g->board.minbet > 12)
+
+Player's choice:0|CALL/RAISE/ALLIN/FOLD|
+
+BOT2 logic stats:
+>phase PreFlop|active=1|folded=0|chips:1000|bet:2
+>CHEN: 1 -> norm=0.000|SKL&MAL: 5 -> norm=0.500|GAP: 1 -> norm=0.333
+>scorePreFlop: 0.267
+>Total Analysis Score:0.133333
+>BOT CALL - finalScore < callThreshold && !(g->board.minbet > 12)
+
+BOT4 logic stats:
+>phase PreFlop|active=1|folded=0|chips:1000|bet:3
+>CHEN: 1 -> norm=0.000|SKL&MAL: 6 -> norm=0.625|GAP: 3 -> norm=1.000
+>scorePreFlop: 0.450
+>Total Analysis Score:0.225000
+>BOT RAISE - chips-bet > 100
+
+BOT5 logic stats:
+>phase PreFlop|active=1|folded=0|chips:1000|bet:3
+>CHEN: 1 -> norm=0.000|SKL&MAL: 3 -> norm=0.250|GAP: 0 -> norm=0.000
+>scorePreFlop: 0.100
+>Total Analysis Score:0.050000
+>BOT CALL - finalScore < callThreshold && !(g->board.minbet > 12)
+
+Player's choice:0|CALL/RAISE/ALLIN/FOLD|
+
+BOT2 logic stats:
+>phase PreFlop|active=1|folded=0|chips:1000|bet:3
+>CHEN: 1 -> norm=0.000|SKL&MAL: 5 -> norm=0.500|GAP: 1 -> norm=0.333
+>scorePreFlop: 0.267
+>Total Analysis Score:0.133333
+>BOT CALL - finalScore < callThreshold && !(g->board.minbet > 12)
+
+BOT4 logic stats:
+>phase PreFlop|active=1|folded=0|chips:1000|bet:4
+>CHEN: 1 -> norm=0.000|SKL&MAL: 6 -> norm=0.625|GAP: 3 -> norm=1.000
+>scorePreFlop: 0.450
+>Total Analysis Score:0.225000
+>BOT RAISE - chips-bet > 100
+
+BOT5 logic stats:
+>phase PreFlop|active=1|folded=0|chips:1000|bet:4
+>CHEN: 1 -> norm=0.000|SKL&MAL: 3 -> norm=0.250|GAP: 0 -> norm=0.000
+>scorePreFlop: 0.100
+>Total Analysis Score:0.050000
+>BOT CALL - finalScore < callThreshold && !(g->board.minbet > 12)
+
+Player's choice:0|CALL/RAISE/ALLIN/FOLD|
+
+BOT2 logic stats:
+>phase PreFlop|active=1|folded=0|chips:1000|bet:4
+>CHEN: 1 -> norm=0.000|SKL&MAL: 5 -> norm=0.500|GAP: 1 -> norm=0.333
+>scorePreFlop: 0.267
+>Total Analysis Score:0.133333
+>BOT CALL - finalScore < callThreshold && !(g->board.minbet > 12)
+
+BOT4 logic stats:
+>phase PreFlop|active=1|folded=0|chips:1000|bet:5
+>CHEN: 1 -> norm=0.000|SKL&MAL: 6 -> norm=0.625|GAP: 3 -> norm=1.000
+>scorePreFlop: 0.450
+>Total Analysis Score:0.225000
+>BOT RAISE - chips-bet > 100
+
+BOT5 logic stats:
+>phase PreFlop|active=1|folded=0|chips:1000|bet:5
+>CHEN: 1 -> norm=0.000|SKL&MAL: 3 -> norm=0.250|GAP: 0 -> norm=0.000
+>scorePreFlop: 0.100
+>Total Analysis Score:0.050000
+>BOT CALL - finalScore < callThreshold && !(g->board.minbet > 12)
+
+Player's choice:0|CALL/RAISE/ALLIN/FOLD|
+
+BOT2 logic stats:
+>phase PreFlop|active=1|folded=0|chips:1000|bet:5
+>CHEN: 1 -> norm=0.000|SKL&MAL: 5 -> norm=0.500|GAP: 1 -> norm=0.333
+>scorePreFlop: 0.267
+>Total Analysis Score:0.133333
+>BOT CALL - finalScore < callThreshold && !(g->board.minbet > 12)
+
+BOT4 logic stats:
+>phase PreFlop|active=1|folded=0|chips:1000|bet:6
+>CHEN: 1 -> norm=0.000|SKL&MAL: 6 -> norm=0.625|GAP: 3 -> norm=1.000
+>scorePreFlop: 0.450
+>Total Analysis Score:0.225000
+>BOT CALL - Hit raise limit
+
+BOT5 logic stats:
+>phase PreFlop|active=1|folded=0|chips:1000|bet:6
+>CHEN: 1 -> norm=0.000|SKL&MAL: 3 -> norm=0.250|GAP: 0 -> norm=0.000
+>scorePreFlop: 0.100
+>Total Analysis Score:0.050000
+>BOT CALL - finalScore < callThreshold && !(g->board.minbet > 12)
+
+Player's choice:0|CALL/RAISE/ALLIN/FOLD|
+
+BOT2 logic stats:
+>phase Flop|active=1|folded=0|chips:994|bet:0
+>CHEN: 1 -> norm=0.000|SKL&MAL: 5 -> norm=0.500|GAP: 1 -> norm=0.333
+>BOT2 ANALYSIS - finalScore: 0.537
+>Total Analysis Score:0.318333
+>BOT CALL - finalScore < callThreshold && !(g->board.minbet > 12)
+
+BOT4 logic stats:
+>phase Flop|active=1|folded=0|chips:994|bet:0
+>CHEN: 1 -> norm=0.000|SKL&MAL: 6 -> norm=0.625|GAP: 3 -> norm=1.000
+>BOT4 ANALYSIS - finalScore: 0.665
+>Total Analysis Score:0.432500
+>BOT RAISE - chips-bet > 100
+
+BOT5 logic stats:
+>phase Flop|active=1|folded=0|chips:994|bet:0
+>CHEN: 1 -> norm=0.000|SKL&MAL: 3 -> norm=0.250|GAP: 0 -> norm=0.000
+>BOT5 ANALYSIS - finalScore: 0.420
+>Total Analysis Score:0.260000
+>BOT FOLD - finalScore < callThreshold && g->board.minbet > 12
+
+Player's choice:0|CALL/RAISE/ALLIN/FOLD|
+
+BOT2 logic stats:
+>phase Flop|active=1|folded=0|chips:994|bet:6
+>CHEN: 1 -> norm=0.000|SKL&MAL: 5 -> norm=0.500|GAP: 1 -> norm=0.333
+>BOT2 ANALYSIS - finalScore: 0.537
+>Total Analysis Score:0.318333
+>BOT FOLD - finalScore < callThreshold && g->board.minbet > 12
+
+BOT4 logic stats:
+>phase Flop|active=1|folded=0|chips:994|bet:22
+>CHEN: 1 -> norm=0.000|SKL&MAL: 6 -> norm=0.625|GAP: 3 -> norm=1.000
+>BOT4 ANALYSIS - finalScore: 0.665
+>Total Analysis Score:0.432500
+>BOT RAISE - chips-bet > 100
+
+Player's choice:0|CALL/RAISE/ALLIN/FOLD|
+
+BOT4 logic stats:
+>phase Turn|active=1|folded=0|chips:956|bet:0
+>CHEN: 1 -> norm=0.000|SKL&MAL: 6 -> norm=0.625|GAP: 3 -> norm=1.000
+>BOT4 ANALYSIS - finalScore: 0.665
+>Total Analysis Score:0.432500
+>BOT FOLD - finalScore < callThreshold && g->board.minbet > 12
+
+Player's choice:0|CALL/RAISE/ALLIN/FOLD|
+
+Player's choice:0|CALL/RAISE/ALLIN/FOLD|
+
+Winner ID:5|BestEval ID:5PLAYER_ID: bots 0-4, player 5
+BESTEVAL_ID: HighCard 0 -> RoyalFlush 10
+End of Current Log at 02:26:38

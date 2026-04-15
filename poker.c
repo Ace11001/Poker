@@ -52,7 +52,7 @@ int main(void){
     //Start
     initGame(&game);
 
-    fprintf(logfp,"Game Init done ");
+    fprintf(logfp,"\nGame Init done ");
     log_timestamp(logfp);
     playerLog(logfp, &game);
     fflush(logfp);
@@ -61,10 +61,11 @@ int main(void){
     dealToActivePlayers(&game);
     drawFrame(&game);
     
-    fprintf(logfp,"Hands dealt ");
+    fprintf(logfp,"\nHands dealt ");
     log_timestamp(logfp);
     handLog(logfp, &game);
     boardHLog(logfp, &game);
+    fprintf(logfp, "\n");
     fflush(logfp);
     
     //start of betting round - PREFLOP
@@ -75,6 +76,7 @@ int main(void){
                 printf(" ");
                 gotoxy(1,23);
 
+                fprintf(logfp, "BOT%d logic stats:\n",i+1);
                 botLogic3(&game, i, 0, logfp);
 
                 updateBotWindow(&game, i);
@@ -87,6 +89,7 @@ int main(void){
         }
         gotoxy(3+60,2);printf(" ");
         inputpl(&game);
+        fprintf(logfp, "Player's choice:%d|CALL/RAISE/ALLIN/FOLD|\n\n",game.playerChoice);
         PlayerActionExec(game.playerChoice, &game.player, &game.board);
         playerWindow(&game);
         communityWindow(&game);
@@ -97,6 +100,9 @@ int main(void){
         if(botFolds == 5){
             break;
         }
+    }
+    for(int i = 0; i < 5; i++){
+        game.bots[i].raiseCount=0;
     }
     //need to check if game can still continue - all bots folded or similar situations ->award pot
     //end ofbetting round - PREFLOP
@@ -119,6 +125,7 @@ int main(void){
                 printf(" ");
                 gotoxy(1,23);
 
+                fprintf(logfp, "BOT%d logic stats:\n",i+1);
                 botLogic3(&game, i, 1, logfp);
 
                 updateBotWindow(&game, i);
@@ -131,6 +138,7 @@ int main(void){
         }
         gotoxy(3+60,2);printf(" ");
         inputpl(&game);
+        fprintf(logfp, "Player's choice:%d|CALL/RAISE/ALLIN/FOLD|\n\n",game.playerChoice);
         PlayerActionExec(game.playerChoice, &game.player, &game.board);
         playerWindow(&game);
         communityWindow(&game);
@@ -141,6 +149,9 @@ int main(void){
         if(botFolds == 5){
             break;
         }
+    }
+    for(int i = 0; i < 5; i++){
+        game.bots[i].raiseCount=0;
     }
     autoPot(&game);
     drawFrame(&game);
@@ -157,6 +168,7 @@ int main(void){
                 printf(" ");
                 gotoxy(1,23);
 
+                fprintf(logfp, "BOT%d logic stats:\n",i+1);
                 botLogic3(&game, i, 2, logfp);
 
                 updateBotWindow(&game, i);
@@ -169,6 +181,7 @@ int main(void){
         }
         gotoxy(3+60,2);printf(" ");
         inputpl(&game);
+        fprintf(logfp, "Player's choice:%d|CALL/RAISE/ALLIN/FOLD|\n\n",game.playerChoice);
         PlayerActionExec(game.playerChoice, &game.player, &game.board);
         playerWindow(&game);
         communityWindow(&game);
@@ -188,6 +201,9 @@ int main(void){
         game.board.minBet = largestBet;
         
     }
+    for(int i = 0; i < 5; i++){
+        game.bots[i].raiseCount=0;
+    }
     autoPot(&game);
     drawFrame(&game);
     dealToHand(&game.boardHand, deck, &game.deckTop);
@@ -203,6 +219,7 @@ int main(void){
                 printf(" ");
                 gotoxy(1,23);
 
+                fprintf(logfp, "BOT%d logic stats:\n",i+1);
                 botLogic3(&game, i, 3, logfp);
 
                 updateBotWindow(&game, i);
@@ -215,6 +232,7 @@ int main(void){
         }
         gotoxy(3+60,2);printf(" ");
         inputpl(&game);
+        fprintf(logfp, "Player's choice:%d|CALL/RAISE/ALLIN/FOLD|\n\n",game.playerChoice);
         PlayerActionExec(game.playerChoice, &game.player, &game.board);
         playerWindow(&game);
         communityWindow(&game);
@@ -259,7 +277,12 @@ int main(void){
     showdownScreen();
     _sleep(2500);
     showdownScreenResult(&game, bestPlayerId,bestEval-1);
-
+    
+    fprintf(logfp, "Winner ID:%d|BestEval ID:%d",bestPlayerId,bestEval);
+    fprintf(logfp,"PLAYER_ID: bots 0-4, player 5\n");
+    fprintf(logfp,"BESTEVAL_ID: HighCard 0 -> RoyalFlush 10\n");
+    fprintf(logfp,"End of Current Log ");
+    log_timestamp(logfp);
 
 
     //end of LOG
