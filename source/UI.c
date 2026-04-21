@@ -115,7 +115,7 @@ if(activeStatus == 1){
     if(foldedStatus == 0){
         printf("|Bet:" YELLOW "%7d"RESET" |" , bet);
     }else{
-        printf("|"YELLOW "---FOLDED---" RESET "|" , bet);
+        printf("|"YELLOW "---FOLDED---" RESET "|");
     }
     gotoxy(xCord, yCord+4);
     printf("+------------+");
@@ -332,7 +332,7 @@ void showdownScreenResult(GAME *game, int indexWinner, int comboIndex) {
             continue;
         }
         gotoxy(botCol, botRow);
-        printf("Bot%d", i+1, game->bots[i].chips);
+        printf("Bot%d", i+1);
         if(game->bots[i].folded) {
             cardPrint(botCol, botRow+1, 99, 99);
             cardPrint(botCol + 4, botRow+1, 99, 99);

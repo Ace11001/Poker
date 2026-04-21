@@ -1,9 +1,0 @@
-#define BLUE "\033[34m"   //0 int colorChoice
-#define RED "\e[0;31m"    //1 int colorChoice
-#define RESET "\033[0m"
-
-void ColPrintf(char* str,int colorChoice){...}
-    Dani char* oz string v terminal izpiše v barvi, ki je določena z int colorChoice
-
-void ColPrintfPlus(char* str, int num, int colornum){//str must include a format specifyer %d!}
-    ColPrintf samo da dani str vključuje tudi %d za prikaz cifer

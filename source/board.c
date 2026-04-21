@@ -22,20 +22,16 @@ void placeInPot(Player *p, Board *b){
     b->pot += amount;
 }
 void bustDetection(Player *p){
-    //should Only check after end of round evaluation to discard the player/bot
     if(p->chips==0){
-        //player Has no Chips
         p->active = 0;
     }
 }
-//showdown
-//inputs an array of structs(Hands)
-int getShowdown(int scores[],int playerCount){//needs to be passed an array of scores, and an integer of number of hands
+int getShowdown(int scores[],int playerCount){
     int bestIndex = 0;
     for(int i = 1; i<playerCount;i++){
         if(scores[i] >scores[bestIndex]){
             bestIndex = i;
         }
     }
-    return bestIndex;//doesn't handle ties!
+    return bestIndex;//no ties
 }

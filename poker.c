@@ -118,14 +118,6 @@ void mainRound(GAME *game){
     //Evaluation
     system("cls");
 
-    int playerEval, bot1Eval, bot2Eval, bot3Eval, bot4Eval, bot5Eval;
-    if(game->player.active == 1 && game->player.folded == 0){playerEval = evaluateMain(&game->playerHand, &game->boardHand);}
-    if(game->bots[0].active == 1 && game->bots[0].folded == 0){bot1Eval = evaluateMain(&game->botHands[0], &game->boardHand);}
-    if(game->bots[1].active == 1 && game->bots[1].folded == 0){bot2Eval = evaluateMain(&game->botHands[1], &game->boardHand);}
-    if(game->bots[2].active == 1 && game->bots[2].folded == 0){bot3Eval = evaluateMain(&game->botHands[2], &game->boardHand);}
-    if(game->bots[3].active == 1 && game->bots[3].folded == 0){bot4Eval = evaluateMain(&game->botHands[3], &game->boardHand);}
-    if(game->bots[4].active == 1 && game->bots[4].folded == 0){bot5Eval = evaluateMain(&game->botHands[4], &game->boardHand);}
-    
     int bestEval = -1;
     int bestPlayerId = -1;  // 0–4 bots, 5 player
 
@@ -145,9 +137,11 @@ void mainRound(GAME *game){
             }
         }
     }
-    showdownScreen();
-    _sleep(2500);
-    showdownScreenResult(game, bestPlayerId,bestEval-1);
+    if(bestPlayerId != -1) {
+        showdownScreen();
+        _sleep(2500);
+        showdownScreenResult(game, bestPlayerId, bestEval-1);
+    }
     switch(bestPlayerId){
         case 0:
             payOutPot(&game->board, &game->bots[0]);break;
@@ -162,19 +156,20 @@ void mainRound(GAME *game){
         case 5:
             payOutPot(&game->board, &game->player);break;
         default:
-            //safety, PROBABLY not needed
+            // All folded - split pot among remaining players (bots and player)
             int pot = game->board.pot;
-            int potPart = pot/5;
+            int potPart = pot / 6;
             for(int i = 0; i < 5; i ++){
                 game->bots[i].chips += potPart;
             }
             game->player.chips += potPart;
+            game->board.pot = 0;
     }
     
 
     fprintf(logfp, "Winner ID:%d|BestEval ID:%d",bestPlayerId,bestEval);
     fprintf(logfp,"PLAYER_ID: bots 0-4, player 5\n");
-    fprintf(logfp,"BESTEVAL_ID: HighCard 0 -> RoyalFlush 10\n");
+    fprintf(logfp,"BESTEVAL_ID:%d|HighCard 0 -> RoyalFlush 10\n", bestEval);
     fprintf(logfp,"End of Current Log ");
     log_timestamp(logfp);
 
@@ -229,6 +224,8 @@ int main(void){
         int endChoice;
         scanf("%d", &endChoice);
         if(endChoice == 0){
+            gotoxy(1,10);
+            printf("Ending session...\n");
             return 0;
         }
         resetForNextRound(&game);

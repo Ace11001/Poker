@@ -58,11 +58,3 @@ void ColPrintfPlus(char* str, int num, int colornum){//str must include a format
     snprintf(Temp,sizeof(Temp),str,num);
     ColPrintf(Temp,colornum);
 }
-/*
-    char DEBUGplayerScore[64];
-    snprintf(DEBUGplayerScore, sizeof(DEBUGplayerScore), "Player Hand result: %d\n", evaluatedPlayer);
-    char DEBUGbot1Score[64];
-    snprintf(DEBUGbot1Score, sizeof(DEBUGbot1Score), "Bot 1 Hand result: %d\n", evaluatedBot1);
-    ColorfulPrintf(DEBUGplayerScore,0);
-    ColorfulPrintf(DEBUGbot1Score, 0);
-*/

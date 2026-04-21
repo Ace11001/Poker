@@ -77,28 +77,18 @@ int calculateRaise(GAME *g, int botIndex, int phase){
     int pot = g->board.pot;
     int raise;
     int maxRaise;
-
-    // 1. Pick a baseline raise‑size (as a fraction of pot)
-
     double raiseMult = 0.5;
-    if(phase == 0) raiseMult = 0.5;   // Smaller raises to prevent exponential growth
+    if(phase == 0) raiseMult = 0.5;
     if(phase == 1) raiseMult = 0.3;
     if(phase == 2) raiseMult = 0.3;
     if(phase == 3) raiseMult = 0.2;
-
     raise = minBet + (int)(pot * raiseMult);
-
-    // 2. Clamp to sane stack limits
-
     if(raise > availableChips){
         raise = availableChips;
     }
     if(raise < minBet + 1 && (minBet + 1 <= availableChips)){
         raise = minBet + 1;
     }
-
-    // 3. Your existing maxRaise caps per phase
-
     if(phase == 0 && availableChips > 50){
         maxRaise = 50;
     }
@@ -114,11 +104,9 @@ int calculateRaise(GAME *g, int botIndex, int phase){
     else{
         maxRaise = availableChips;
     }
-
     if(raise > maxRaise){
         raise = maxRaise;
     }
-
     return raise;
 }
 int chipAdvantage(GAME *g, int botIndex){
@@ -140,7 +128,7 @@ void decisionTree(GAME *g, int botIndex,int phase, double finalScore,double fold
     int maxR = 300 + (g->board.pot/10) + (g->board.minBet);
 
     if (phase == 3 && finalScore < callThreshold) {
-        // On the river, do not fold; call if possible, otherwise go all-in.
+        //Bots don't fold on river
         if (min <= botChips) {
             g->bots[botIndex].bet = min;
             fprintf(logfp, ">BOT CALL - river fallback (no fold on river)\n\n");
@@ -205,7 +193,8 @@ void decisionTree(GAME *g, int botIndex,int phase, double finalScore,double fold
         
     }
 }
-//Inclusion of evaluate.c
+//Modified helper functions
+
 void permutateFLOP(Hand* hand1, Hand* boardhand,  Hand5 out[1]) {
     out[0].cards[0] = hand1->cards[0];
     out[0].cards[1] = hand1->cards[1];
@@ -258,7 +247,7 @@ void botLogic3(GAME *g, int botIndex, int phase, FILE *logfp){
     double foldT, callT, raiseT, allinT;
     switch(phase){
         case 1: // Flop
-            foldT   = 0.0051;      // ≈ preflop level
+            foldT   = 0.0051;
             callT   = 0.35;
             raiseT  = 0.60;
             break;
@@ -273,16 +262,16 @@ void botLogic3(GAME *g, int botIndex, int phase, FILE *logfp){
             raiseT  = 0.75;
             break;
         default: // Preflop
-            foldT   = 0.005;      // same as flop
-            callT   = 0.2;      // unchanged
-            raiseT  = 0.45;      // unchanged
+            foldT   = 0.005;
+            callT   = 0.2;
+            raiseT  = 0.45;
             break;
     }
     double analysisScore = botAnalysis(g, botIndex, phase, logfp);
     double cardScore = 0;
     if(g->boardHand.count == 3){
         Hand5 in1[1];
-        permutateFLOP(&g->botHands[botIndex], &g->boardHand, in1);//Permutations created
+        permutateFLOP(&g->botHands[botIndex], &g->boardHand, in1);
         cardScore = botCardEval(g, botIndex, in1, 1);
     }else if(g->boardHand.count == 4){
         Hand5 in2[6];
@@ -298,13 +287,11 @@ void botLogic3(GAME *g, int botIndex, int phase, FILE *logfp){
     }else{
         analysisScore = 0.5 * analysisScore + 0.5 * cardScore;
     }
-    
-    // Add situational factors
-    // Tightness factor: fewer active players = tighter play
+    //fewer active players = tighter play
     int activePlayers = g->numberofActive;
     double tightnessFactor = (6 - activePlayers) / 5.0;  // 0 when 6 players, 1 when 1 player
     analysisScore -= 0.05 * tightnessFactor;
-    // Add small randomness to avoid predictability
+    //random granularity
     analysisScore += ((double)rand() / RAND_MAX - 0.5) * 0.1;  // +/- 0.05
     // Clamp to [0,1]
     if(analysisScore > 1.0) analysisScore = 1.0;

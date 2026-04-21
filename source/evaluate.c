@@ -65,12 +65,12 @@ int isStraight(Hand5* hand){
                 ranks[i] = ranks[j];
                 ranks[j] = t;
             }
-    //check: also catches special T,J,Q,K,A = {8,9,10,11,12}
+    //check special cases
     int normal = 1;
     for(int i = 0; i < COMBO_SIZE - 1; i++)
         if(ranks[i+1] - ranks[i] != 1){ normal = 0; break; }
     if(normal) return 1;
-    //Special case: Ace-low A,2,3,4,5 = {0,1,2,3,12}
+    //check special case:
     if(ranks[0]==0 && ranks[1]==1 && ranks[2]==2 &&
        ranks[3]==3 && ranks[4]==12) return 1;
     return 0;

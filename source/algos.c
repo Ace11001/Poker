@@ -80,10 +80,6 @@ int SklanskyMalmuth(Hand *h) {
         card1rank = h->cards[1].rank; card1suit = h->cards[1].suit;
         card2rank = h->cards[0].rank; card2suit = h->cards[0].suit;
     }
-    // card1 >= card2 guaranteed
-    //index: 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12
-    // rank: 2, 3, 4, 5, 6, 7, 8, 9,10, J,  Q,  K,  A
- 
     int isPair   = (card1rank == card2rank);
     int isSuited = (card1suit == card2suit);
     // Group 1: AA, AKs, KK, QQ, JJ
@@ -171,7 +167,7 @@ int SklanskyMalmuth(Hand *h) {
         (isSuited && card1rank == 1  && card2rank == 0)) {
         return 2;
     }
-    // Very weak but still “better than total trash”: A2s–A9s, K2s–K9s, Q2s–Q9s, etc.
+    //exceptions: A2s–A9s, K2s–K9s, Q2s–Q9s, etc.
     if ((card1rank == 12 && card2rank >= 0 && card2rank <= 7 && isSuited) ||
         (card1rank == 11 && card2rank >= 0 && card2rank <= 7 && isSuited) ||
         (card1rank == 10 && card2rank >= 0 && card2rank <= 7 && isSuited)) {
@@ -192,21 +188,6 @@ int BoardTexture(Hand* board, int communityCount){
         int suit = board->cards[i].suit;
         suitCount[suit]++;
     }   
-    /*debug print freq
-    printf("Suit occurences:\n|C|S|H|D|\n");
-    for(int i = 0; i<4;i++){
-        printf("|%d",suitCount[i]);
-    }
-    printf("|\n");
-    printf("Rank occurences:\n");
-    printf("| 0  1  2  3  4  5  6  7  8  9 10 11 12|\n");
-    printf("| 2| 3| 4| 5| 6| 7| 8| 9|10| J| Q| K| A|\n");
-    for(int i = 0; i < 13; i++){
-        printf("|%-2d",rankCount[i]);
-    }
-    printf("|\n");
-    end of debug1*/
-
     int maxSuitFreq = 1;
     int maxSuitIndex = 0;
     for(int i = 0; i < 4; i++){
@@ -214,7 +195,7 @@ int BoardTexture(Hand* board, int communityCount){
             maxSuitFreq=suitCount[i];
             maxSuitIndex = i;
         }
-    }//if there are 4 cards with 2 pairs of the same suit we neglect the correct index
+    }
     int pairs=0,threes=0,fours=0,highrank=0;
     for(int i=0; i < 13; i++){
         if(rankCount[i]==2)pairs++;
@@ -255,9 +236,6 @@ int BoardTexture(Hand* board, int communityCount){
         else if(avgGap<=2.0f)gapScore=2;
         else gapScore=0;
     }
-    //printf("|maxSuitFreq:%d|maxSuitIndex:%d|\n",maxSuitFreq,maxSuitIndex);
-    //printf("\n\n");
-    //printf("4Kind Count:%d|3Kind Count:%d|pair Count:%d|highcard Index:%d|\n",fours,threes,pairs,highrank);
     int FlushScore;//Higher - More chance other players complete a Flush
     switch(maxSuitFreq){
             case 5:
@@ -273,16 +251,9 @@ int BoardTexture(Hand* board, int communityCount){
                 FlushScore = 0;//No chance for flush
                 break;
         }
-    //printf("FlushScore:%d\n",FlushScore);
-    //printf("Gap Score:%d| Avg Gap Score:%.1f\n",gapScore, avgGap);
     int textureScore = FlushScore + gapScore + pairs + (threes*2);
     return textureScore;
-    /*
-    Texture 0-2:   "DRY"    
-    Texture 3-5:   "MEDIUM"   
-    Texture 6-8:   "WET"      
-    Texture 9-12:  "WETTEST"   
-    */
+    //Texture 0-2:DRY|Texture 3-5:MEDIUM|Texture 6-8:WET|Texture 9-12:WETTEST   
 }
 int gapScoreLen(Hand* board, int numOfCards) {
     if (numOfCards < 2) return 0;
@@ -322,7 +293,7 @@ int gapScoreLen(Hand* board, int numOfCards) {
     }
     return gapScore;
 }
-void allInHandle(GAME *g, int botIndex, double minScore){
+void allInHandle(GAME *g, int botIndex, double minScore){//WIP
     int AllInStatus = g->board.AllInStatus;
         int AllInSize = g->board.AllInSize;
         int modifiedSize = 0;

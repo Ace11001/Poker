@@ -53,36 +53,30 @@ void dealToActivePlayers(GAME *g) {
 void testFindWinner(int playerScore, int botScores[], int numBots, GAME *g) {
     int maxBotScore = -1;
     int tiedBotCount = 0;
-    int tiedBots[5];  // Store tied bot indices (1-based)
-    
-    // Single pass: find max + count ties
+    int tiedBots[5];
+    //find max + count ties
     for(int i = 0; i < numBots; i++) {
         if(botScores[i] > maxBotScore) {
             maxBotScore = botScores[i];
             tiedBotCount = 1;
-            tiedBots[0] = i + 1;  // 1-based bot number
+            tiedBots[0] = i + 1;
         } 
         else if(botScores[i] == maxBotScore) {
             tiedBots[tiedBotCount] = i + 1;
             tiedBotCount++;
         }
     }
-    
     printf("Player: %d, Top bots: ", playerScore);
     for(int i = 0; i < tiedBotCount; i++) {
         printf("Bot%d(%d) ", tiedBots[i], maxBotScore);
     }
     printf("\n");
-    
-    
     // Winner logic
     if(playerScore > maxBotScore) {
-        printf("PLAYER WINS outright!\n");
         payOutPot(&g->board, &g->player);
     } 
     else if(playerScore < maxBotScore) {
         if(tiedBotCount == 1) {
-            printf("BOT %d WINS outright!\n", tiedBots[0]);
             payOutPot(&g->board, &g->bots[tiedBots[0]-1]);
         } else {
             printf("BOTS ");
@@ -91,7 +85,7 @@ void testFindWinner(int playerScore, int botScores[], int numBots, GAME *g) {
             int splitPot = g->board.pot / tiedBotCount;
             g->board.pot = 0;
             for(int i = 0; i < tiedBotCount; i++) {
-                g->bots[tiedBots[i]-1].chips += splitPot;  // FIXED: tiedBots[i]
+                g->bots[tiedBots[i]-1].chips += splitPot;
             }
         }
     }
@@ -107,60 +101,12 @@ void testFindWinner(int playerScore, int botScores[], int numBots, GAME *g) {
         }
     }
 }
-
-
-void testRound(GAME *g){
-    ColPrintfPlus("Round %d starting\n", (g->round), 1);
-    int minBet = (g->board).minBet;
-    printf(" > Opening bets - %d\n\n", minBet);
-    g->playerChoice = playerAction();
-    PlayerActionExec(g->playerChoice, &g->player, &g->board);
-    dealToActivePlayers(g);
-    
-    dealToHand(&(g->boardHand),deck, &(g->deckTop));
-    dealToHand(&(g->boardHand),deck, &(g->deckTop));
-    dealToHand(&(g->boardHand),deck, &(g->deckTop));
-    printf("%s's",g->player.name);
-    printHand(&g->playerHand);
-    printf("Board");
-    printHand(&g->boardHand);
-
-    printf(" > Opening bets - %d\n\n", minBet);
-    g->playerChoice = playerAction();
-    PlayerActionExec(g->playerChoice, &g->player, &g->board);
-    dealToHand(&(g->boardHand),deck, &(g->deckTop));
-    printf("Board");
-    printHand(&g->boardHand);
-
-    printf(" > Opening bets - %d\n\n", minBet);
-    g->playerChoice = playerAction();
-    PlayerActionExec(g->playerChoice, &g->player, &g->board);
-    dealToHand(&(g->boardHand),deck, &(g->deckTop));
-    printf("Board");
-    printHand(&g->boardHand);
-
-    printf(" > Opening bets - %d\n\n", minBet);
-    g->playerChoice = playerAction();
-    PlayerActionExec(g->playerChoice, &g->player, &g->board);
-
-
-    int playerScore = evaluateMain(&g->playerHand, &g->boardHand);
-    printf("Player score: %d\n",playerScore);
-    int botScores[5];
-    for(int i = 0; i < 5; i++){
-        botScores[i] = evaluateMain(&g->botHands[i],&g->boardHand);
-        printf("Bot%d score: %d\n", (i+1), botScores[i]);
-    }
-    testFindWinner(playerScore, botScores, 5, g);
-}
 int allBetOrFolded(GAME *game){
-    // Check bots
     for (int i = 0; i < 5; i++) {
         if (game->bots[i].active && !game->bots[i].folded && game->bots[i].bet != game->board.minBet) {
             return 0;
         }
     }
-    // Check player
     if (game->player.active && !game->player.folded && game->player.bet != game->board.minBet) {
         return 0;
     }

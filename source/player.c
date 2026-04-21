@@ -50,8 +50,6 @@ void Player_Call_Check(Player *p, Board *b) {
     }
 }
 void Player_Raise(Player *p, Board *b){
-    int currPot = b->pot;
-    int playerBet = p->bet;
     int playerRaiseAmount;
     gotoxy(1,23);
     printf(">Enter the amount you want to bet(minimal: %d):", b->minBet+1);
@@ -60,7 +58,6 @@ void Player_Raise(Player *p, Board *b){
         printf("Invalid raise!\n");
         return;
     }
-    int toCall = b->minBet - p->bet;
     p->bet = playerRaiseAmount;
     b->minBet = playerRaiseAmount;
 }
