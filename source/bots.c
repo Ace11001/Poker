@@ -122,6 +122,21 @@ int chipAdvantage(GAME *g, int botIndex){
     if(chipAvg > myChips){return 0;}
     else{return 1;}
 }
+int allinCheck(GAME *g){
+    if(g->board.AllInStatus == 1){
+        return 1;
+    }
+    return 0;
+}
+
+void botChipClamp(GAME *g, int botIndex){
+    if(g->bots[botIndex].chips < 0){
+        int error = g->bots[botIndex].chips;
+        int abs = error * (-1);
+        g->bots[botIndex].chips += abs;
+        g->bots[botIndex].bet += error;
+    }
+}
 void decisionTree(GAME *g, int botIndex,int phase, double finalScore,double foldThreshold, double callThreshold, double raiseThreshold, double ALLIN_threshold, FILE *logfp){
     int botChips = g->bots[botIndex].chips;
     int min = g->board.minBet;
@@ -130,13 +145,23 @@ void decisionTree(GAME *g, int botIndex,int phase, double finalScore,double fold
     if (phase == 3 && finalScore < callThreshold) {
         //Bots don't fold on river
         if (min <= botChips) {
+            if(allinCheck == 1){
+                if(g->player.chips < 300){
+                    //fold
+                    g->bots[botIndex].folded = 1;
+                    fprintf(logfp,">BOT FOLD - finalScore < foldThreshold\n\n");
+                    fflush(logfp);
+                    return;
+                }
+            }
             g->bots[botIndex].bet = min;
-            fprintf(logfp, ">BOT CALL - river fallback (no fold on river)\n\n");
+            fprintf(logfp, ">BOT CALL - river exception (no fold on river)\n\n");
         } else {
             g->bots[botIndex].bet = botChips;
-            fprintf(logfp, ">BOT ALL-IN - river fallback (no fold on river)\n\n");
+            fprintf(logfp, ">BOT ALL-IN - river exception (no fold on river)\n\n");
         }
         fflush(logfp);
+        botChipClamp(g, botIndex);
         return;
     }
 
@@ -145,6 +170,7 @@ void decisionTree(GAME *g, int botIndex,int phase, double finalScore,double fold
         g->bots[botIndex].folded = 1;
         fprintf(logfp,">BOT FOLD - finalScore < foldThreshold\n\n");
         fflush(logfp);
+        botChipClamp(g, botIndex);
         return;
     }else if(finalScore < callThreshold){
         if(g->board.minBet > 12 && g->numberofActive > 2){
@@ -152,20 +178,41 @@ void decisionTree(GAME *g, int botIndex,int phase, double finalScore,double fold
             g->bots[botIndex].folded = 1;
             fprintf(logfp,">BOT FOLD - finalScore < callThreshold && g->board.minbet > 12 && active > 2\n\n");
             fflush(logfp);
+            botChipClamp(g, botIndex);
             return;
         }else{
             //CALL
+            if(allinCheck == 1){
+                if(g->player.chips < 300){
+                    //fold
+                    g->bots[botIndex].folded = 1;
+                    fprintf(logfp,">BOT FOLD - finalScore < foldThreshold\n\n");
+                    fflush(logfp);
+                    return;
+                }
+            }
             g->bots[botIndex].bet = min;
             fprintf(logfp,">BOT CALL - finalScore < callThreshold && !(g->board.minbet > 12)\n\n");
             fflush(logfp);
+            botChipClamp(g, botIndex);
             return;
         }
     }else if(finalScore < raiseThreshold){
         if(g->bots[botIndex].chips - g->board.minBet < 100){
             //CALL
+            if(allinCheck == 1){
+                if(g->player.chips < 300){
+                    //fold
+                    g->bots[botIndex].folded = 1;
+                    fprintf(logfp,">BOT FOLD - finalScore < foldThreshold\n\n");
+                    fflush(logfp);
+                    return;
+                }
+            }
             g->bots[botIndex].bet = min;
             fprintf(logfp, ">BOT CALL - finalScore < raiseThreshold && chips-bet < 100\n\n");
             fflush(logfp);
+            botChipClamp(g, botIndex);
             return;
         }else if(g->bots[botIndex].raiseCount <= 3){
             //RAISE
@@ -175,22 +222,41 @@ void decisionTree(GAME *g, int botIndex,int phase, double finalScore,double fold
             g->bots[botIndex].raiseCount++;
             fprintf(logfp, ">BOT RAISE - chips-bet > 100\n\n");
             fflush(logfp);
+            botChipClamp(g, botIndex);
             return;
         }else{
             //CALL
+            if(allinCheck == 1){
+                if(g->player.chips < 300){
+                    //fold
+                    g->bots[botIndex].folded = 1;
+                    fprintf(logfp,">BOT FOLD - finalScore < foldThreshold\n\n");
+                    fflush(logfp);
+                    return;
+                }
+            }
             g->bots[botIndex].bet = min;
             fprintf(logfp, ">BOT CALL - Hit raise limit\n\n");
             fflush(logfp);
+            botChipClamp(g, botIndex);
             return;
         }
     }else{
-        //CALL -until allin works
+        //CALL
+        if(allinCheck == 1){
+                if(g->player.chips < 300){
+                    //fold
+                    g->bots[botIndex].folded = 1;
+                    fprintf(logfp,">BOT FOLD - finalScore < foldThreshold\n\n");
+                    fflush(logfp);
+                    return;
+                }
+            }
         g->bots[botIndex].folded = 1;
         fprintf(logfp, ">BOT CALLS - lack of ALLIN HANDLING\n\n");
         fflush(logfp);
+        botChipClamp(g, botIndex);
         return;
-        //ALL-IN  WIP
-        
     }
 }
 //Modified helper functions

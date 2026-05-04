@@ -13,8 +13,8 @@
 #include "bots.h"
 #include "log.h"
 
-#define BOT_TIMER 15 //time in ms that bots "decide"
-#define CARD_TIMER 4 //time in ms between showing cards
+#define BOT_TIMER 1000 //time in ms that bots "decide"
+#define CARD_TIMER 400 //time in ms between showing cards
 
 FILE *logfp;
 
@@ -25,6 +25,7 @@ void log_timestamp(FILE *logfp) {
 }
 void bettingRound(GAME *game, int phase){
     while(!allBetOrFolded(game)){
+        int foldCount = 0;
         for(int i = 0; i < 5; i++){
             if(game->bots[i].folded == 0 && game->bots[i].active == 1){
                 gotoxy(3 + ((i-1)*15), 2);
@@ -40,7 +41,10 @@ void bettingRound(GAME *game, int phase){
                 gotoxy(1,23);
                 _sleep(BOT_TIMER);
                 gotoxy(3 + (i*15), 2);printf(" ");
-            }
+            }else{foldCount++;}
+        }
+        if(foldCount == 5){
+            break;
         }
         gotoxy(3+60,2);printf(" ");
         inputpl(game);
@@ -176,7 +180,16 @@ void mainRound(GAME *game){
     gotoxy(1,25);
     system("pause");
 }
-
+void checkBust(GAME *game){
+    for(int i = 0; i < 5; i++){
+        if(game->bots[i].chips <= 0){
+            game->bots[i].active = 0;
+        }
+    }
+    if(game->player.chips <= 0){
+        game->player.active = 0;
+    }
+}
 
  
 int main(void){
@@ -203,6 +216,7 @@ int main(void){
     log_timestamp(logfp);
     fflush(logfp);
     sizeDemo();
+    game.round = 1;
     //Game Loop
     while(game.player.chips > 0){
         mainRound(&game);
@@ -228,6 +242,10 @@ int main(void){
             printf("Ending session...\n");
             return 0;
         }
+        if(game.player.chips <= 0){
+            system("cls");
+            printf("You have run out of chips, Quitting...");
+        }
         resetForNextRound(&game);
         initGame(&game);
         game.player.chips = plc;
@@ -236,6 +254,8 @@ int main(void){
         game.bots[2].chips = b3;
         game.bots[3].chips = b4;
         game.bots[4].chips = b5;
+        checkBust(&game);
+        game.round++;
     }
 
     //end of LOG

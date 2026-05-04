@@ -23,7 +23,6 @@ void initGame(GAME *g){
     initPlayer(&(g->bots[4]),(g->startingChips),"Bot 5");   
     initBoard(&(g->board));
     g->deckTop = 0;
-    g->round = 1;
     initHand(&g->playerHand, &g->player);
     for(int i = 0; i < 5; i++){
         initHand(&g->botHands[i],&g->bots[i]);

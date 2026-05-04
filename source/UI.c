@@ -176,6 +176,9 @@ int inputpl(GAME *g){
     if(g->player.folded == 1 || g->player.active == 0){
         return 3;
     }
+    if(g->board.AllInStatus == 1){
+        return 0;
+    }
     gotoxy(55,21);
     printf(" Enter choice:");
     gotoxy(69,21);
