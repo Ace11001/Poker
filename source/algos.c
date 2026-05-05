@@ -189,11 +189,9 @@ int BoardTexture(Hand* board, int communityCount){
         suitCount[suit]++;
     }   
     int maxSuitFreq = 1;
-    int maxSuitIndex = 0;
     for(int i = 0; i < 4; i++){
         if(suitCount[i]>maxSuitFreq){
             maxSuitFreq=suitCount[i];
-            maxSuitIndex = i;
         }
     }
     int pairs=0,threes=0,fours=0,highrank=0;

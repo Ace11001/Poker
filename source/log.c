@@ -32,7 +32,7 @@ void handLog(FILE *logfp, GAME *game){
     b52S = game->botHands[4].cards[1].suit; b52R = game->botHands[4].cards[1].rank;
     const char* rank_names[13] = {"2", "3", "4", "5", "6", "7", "8", "9", "10", "Jack", "Queen", "King","Ace"};
     const char* suit_names[4] = {"Clubs","Spades","Hearts","Diamonds"};
-    fprintf(logfp, "Cards:\n", NULL);
+    fprintf(logfp, "Cards:\n");
     fprintf(logfp, ">Player|%5s of %-8s|%5s of %-8s\n", rank_names[p1R], suit_names[p1S], rank_names[p2R], suit_names[p2S]);
     fprintf(logfp, ">Bot 1 |%5s of %-8s|%5s of %-8s\n", rank_names[b11R], suit_names[b11S], rank_names[b12R], suit_names[b12S]);
     fprintf(logfp, ">Bot 2 |%5s of %-8s|%5s of %-8s\n", rank_names[b21R], suit_names[b21S], rank_names[b22R], suit_names[b22S]);
@@ -43,7 +43,7 @@ void handLog(FILE *logfp, GAME *game){
 void boardHLog(FILE *logfp, GAME *game){
     int S1,S2,S3,S4,S5, R1,R2,R3,R4,R5;
     int count = game->boardHand.count;
-    fprintf(logfp, "Board Cards:\n", NULL);
+    fprintf(logfp, "Board Cards:\n");
     if(count == 3){
         S1 = game->boardHand.cards[0].suit;R1 = game->boardHand.cards[0].rank;
         S2 = game->boardHand.cards[1].suit;R2 = game->boardHand.cards[1].rank;
@@ -72,7 +72,7 @@ void boardHLog(FILE *logfp, GAME *game){
         fprintf(logfp,"> %s of %s\n", rank_names[R4], suit_names[S4]);
         fprintf(logfp,"> %s of %s\n", rank_names[R5], suit_names[S5]);
     }else{
-        fprintf(logfp,">Board Cards don't exist\n", NULL);
+        fprintf(logfp,">Board Cards don't exist\n");
         return;
     }
 }

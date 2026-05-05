@@ -12,16 +12,15 @@
 #include "UI.h"
 #include "bots.h"
 #include "log.h"
-
-#define BOT_TIMER 1000 //time in ms that bots "decide"
-#define CARD_TIMER 400 //time in ms between showing cards
-
+#include "config.h"
 FILE *logfp;
 
 void log_timestamp(FILE *logfp) {
-    time_t now = time(NULL);
-    struct tm *t = localtime(&now);
-    fprintf(logfp, "at %.2d:%.2d:%.2d\n",t->tm_hour, t->tm_min, t->tm_sec);
+    if(LOG_TOGGLE == 1){        
+        time_t now = time(NULL);
+        struct tm *t = localtime(&now);
+        fprintf(logfp, "at %.2d:%.2d:%.2d\n",t->tm_hour, t->tm_min, t->tm_sec);
+    }
 }
 void bettingRound(GAME *game, int phase){
     while(!allBetOrFolded(game)){
@@ -32,7 +31,7 @@ void bettingRound(GAME *game, int phase){
                 printf(" ");
                 gotoxy(1,23);
 
-                fprintf(logfp, "BOT%d logic stats:\n",i+1);
+                if(LOG_TOGGLE == 1)fprintf(logfp, "BOT%d logic stats:\n",i+1);
                 botLogic3(game, i, phase, logfp);
 
                 updateBotWindow(game, i);
@@ -48,7 +47,7 @@ void bettingRound(GAME *game, int phase){
         }
         gotoxy(3+60,2);printf(" ");
         inputpl(game);
-        fprintf(logfp, "Player's choice:%d|CALL/RAISE/ALLIN/FOLD|\n\n",game->playerChoice);
+        if(LOG_TOGGLE == 1)fprintf(logfp, "Player's choice:%d|CALL/RAISE/ALLIN/FOLD|\n\n",game->playerChoice);
         PlayerActionExec(game->playerChoice, &game->player, &game->board);
         playerWindow(game);
         communityWindow(game);
@@ -63,21 +62,23 @@ void bettingRound(GAME *game, int phase){
 }
 
 void mainRound(GAME *game){
-    fprintf(logfp,"\nGame Init done ");
-    log_timestamp(logfp);
-    playerLog(logfp, game);
-    fflush(logfp);
-    fprintf(logfp, "Round %d Start\n", game->round);
+    if(LOG_TOGGLE == 1){
+        fprintf(logfp,"\nGame Init done ");
+        log_timestamp(logfp);
+        playerLog(logfp, game);
+        fflush(logfp);
+        fprintf(logfp, "Round %d Start\n", game->round);
+    }
     dealToActivePlayers(game);
     drawFrame(game);
-    
-    fprintf(logfp,"\nHands dealt ");
-    log_timestamp(logfp);
-    handLog(logfp, game);
-    boardHLog(logfp, game);
-    fprintf(logfp, "\n");
-    fflush(logfp);
-    
+    if(LOG_TOGGLE == 1){
+        fprintf(logfp,"\nHands dealt ");
+        log_timestamp(logfp);
+        handLog(logfp, game);
+        boardHLog(logfp, game);
+        fprintf(logfp, "\n");
+        fflush(logfp);
+    }
     //start of betting round - PREFLOP
     bettingRound(game, 0);
     for(int i = 0; i < 5; i++){
@@ -170,13 +171,13 @@ void mainRound(GAME *game){
             game->board.pot = 0;
     }
     
-
-    fprintf(logfp, "Winner ID:%d|BestEval ID:%d",bestPlayerId,bestEval);
-    fprintf(logfp,"PLAYER_ID: bots 0-4, player 5\n");
-    fprintf(logfp,"BESTEVAL_ID:%d|HighCard 0 -> RoyalFlush 10\n", bestEval);
-    fprintf(logfp,"End of Current Log ");
-    log_timestamp(logfp);
-
+    if(LOG_TOGGLE==1){
+        fprintf(logfp, "Winner ID:%d|BestEval ID:%d\n",bestPlayerId,bestEval);
+        fprintf(logfp,"PLAYER_ID: bots 0-4, player 5\n");
+        fprintf(logfp,"BESTEVAL_ID:%d|HighCard 0 -> RoyalFlush 10\n", bestEval);
+        fprintf(logfp,"End of Current Log ");
+        log_timestamp(logfp);
+    }
     gotoxy(1,25);
     system("pause");
 }
@@ -202,19 +203,22 @@ int main(void){
     time_t now = time(NULL);
     struct tm *t = localtime(&now);
     //Init
+    if(LOG_TOGGLE==1){
     fprintf(logfp, "Startup - Start ");
     log_timestamp(logfp);
     fflush(logfp);
-
+    }
     srand(time(NULL));
     createDeck(deck);
     shuffleDeck(deck);
     resetDeck(deck);
     GAME game;
     initGame(&game);
-    fprintf(logfp, "Startup - End ");
-    log_timestamp(logfp);
-    fflush(logfp);
+    if(LOG_TOGGLE == 1){
+        fprintf(logfp, "Startup - End ");
+        log_timestamp(logfp);
+        fflush(logfp);
+    }
     sizeDemo();
     game.round = 1;
     //Game Loop
